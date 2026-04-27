@@ -1,5 +1,5 @@
 /* src/app/globals.css */
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Tema Padrão (Light) - Aplicado ao :root (html) por padrão */
 :root {
@@ -67,22 +67,22 @@
 
 /* Tema Forest */
 .theme-forest {
-  --color-bg: #1A4D2E;
-  --color-text: #FAF3E0;
+  --color-bg: #1a4d2e;
+  --color-text: #faf3e0;
   --color-text-muted: #e4dccf;
-  --color-button-bg: #FAF3E0;
-  --color-button-text: #1A4D2E;
+  --color-button-bg: #faf3e0;
+  --color-button-text: #1a4d2e;
   --color-button-hover-bg: #e4dccf;
-  --color-image-border: #FAF3E0;
+  --color-image-border: #faf3e0;
 }
 
 /* Tema Bubblegum */
 .theme-bubblegum {
-  --color-bg: #FFC0CB;
+  --color-bg: #ffc0cb;
   --color-text: #333333;
   --color-text-muted: #555555;
   --color-button-bg: #ffffff;
-  --color-button-text: #D14A89;
+  --color-button-text: #d14a89;
   --color-button-hover-bg: #ffe4e8;
   --color-image-border: #ffffff;
 }
@@ -157,7 +157,14 @@
   --color-button-text: #ffffff;
   --color-button-hover-bg: rgba(255, 255, 255, 0.3);
   --color-image-border: #ffffff;
-  background-image: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  background-image: linear-gradient(
+    45deg,
+    #f09433 0%,
+    #e6683c 25%,
+    #dc2743 50%,
+    #cc2366 75%,
+    #bc1888 100%
+  );
 }
 
 /* Tema Imagem Personalizada */
@@ -179,7 +186,9 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
   min-height: 100vh;
   /* Garante que o fundo ocupe toda a altura */
 }
@@ -187,12 +196,20 @@ body {
 /* Aplica gradientes específicos quando essas classes estão no HTML */
 .theme-ocean,
 .theme-ocean body {
-  background-image: linear-gradient(to right, var(--color-ocean-start), var(--color-ocean-end));
+  background-image: linear-gradient(
+    to right,
+    var(--color-ocean-start),
+    var(--color-ocean-end)
+  );
   background-color: var(--color-ocean-end);
 }
 
 .theme-sunset,
 .theme-sunset body {
-  background-image: linear-gradient(to right, var(--color-sunset-start), var(--color-sunset-end));
+  background-image: linear-gradient(
+    to right,
+    var(--color-sunset-start),
+    var(--color-sunset-end)
+  );
   background-color: var(--color-sunset-end);
 }

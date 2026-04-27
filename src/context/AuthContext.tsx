@@ -1,7 +1,13 @@
 // src/context/AuthContext.tsx
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 // 'DocumentData' removido da importação
 import { doc, getDoc } from 'firebase/firestore';
@@ -46,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(userAuth);
 
         // BUSCAR DADOS ADICIONAIS NO FIRESTORE (INCLUINDO 'role')
-        const userDocRef = doc(db, "users", userAuth.uid);
+        const userDocRef = doc(db, 'users', userAuth.uid);
         try {
           const docSnap = await getDoc(userDocRef);
           if (docSnap.exists()) {
@@ -54,14 +60,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUserData(docSnap.data() as UserData);
             // console.log("Dados do usuário (incluindo role):", docSnap.data()); // Log opcional
           } else {
-            console.warn("Documento do usuário não encontrado no Firestore para UID:", userAuth.uid);
+            console.warn(
+              'Documento do usuário não encontrado no Firestore para UID:',
+              userAuth.uid
+            );
             setUserData(null); // Garante que não há dados antigos
           }
         } catch (error) {
-          console.error("Erro ao buscar dados do usuário no Firestore:", error);
+          console.error('Erro ao buscar dados do usuário no Firestore:', error);
           setUserData(null);
         }
-
       } else {
         // Usuário está deslogado
         setUser(null);

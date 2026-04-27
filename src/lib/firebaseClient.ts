@@ -1,7 +1,7 @@
 // lib/firebaseClient.ts
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 // Sua configuração do Firebase, lida a partir das variáveis de ambiente
 const firebaseConfig = {

@@ -1,16 +1,23 @@
 // src/lib/authService.ts
 
-import { GoogleAuthProvider, signInWithPopup, User, signOut } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { auth, db } from "./firebaseClient";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  User,
+  signOut,
+} from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from './firebaseClient';
 
 // Função para gerar um 'slug' (URL amigável) a partir de um nome
 const generateSlug = (displayName: string) => {
-  if (!displayName) { // Adiciona um fallback caso displayName seja nulo ou vazio
-      displayName = "usuario";
+  if (!displayName) {
+    // Adiciona um fallback caso displayName seja nulo ou vazio
+    displayName = 'usuario';
   }
   const slugBase = displayName
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove acentos
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove acentos
     .toLowerCase()
     .replace(/\s+/g, '-') // substitui espaços por hífens
     .replace(/[^\w\-]+/g, '') // remove caracteres especiais não permitidos em slugs
@@ -27,17 +34,17 @@ export const signInWithGoogle = async (): Promise<User | null> => {
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
-    const userDocRef = doc(db, "users", user.uid);
+    const userDocRef = doc(db, 'users', user.uid);
     const docSnap = await getDoc(userDocRef);
 
     // Se o usuário NÃO existe (primeiro login)
     if (!docSnap.exists()) {
-      console.log("Novo usuário detectado. Criando documentos...");
-      const pageSlug = generateSlug(user.displayName || "usuario"); // Gera o slug
+      console.log('Novo usuário detectado. Criando documentos...');
+      const pageSlug = generateSlug(user.displayName || 'usuario'); // Gera o slug
 
       // 1. Tenta criar o documento na coleção 'users'
       try {
-        await setDoc(doc(db, "users", user.uid), {
+        await setDoc(doc(db, 'users', user.uid), {
           uid: user.uid,
           email: user.email,
           displayName: user.displayName,
@@ -55,44 +62,48 @@ export const signInWithGoogle = async (): Promise<User | null> => {
 
       // 2. Tenta criar o documento na coleção 'pages'
       try {
-        await setDoc(doc(db, "pages", pageSlug), { // Usa o pageSlug como ID do documento
+        await setDoc(doc(db, 'pages', pageSlug), {
+          // Usa o pageSlug como ID do documento
           userId: user.uid, // Salva o UID do dono da página
           slug: pageSlug, // Salva o slug dentro do documento também (pode ser útil)
-          title: user.displayName || "Minha Página", // Usa displayName ou um padrão
+          title: user.displayName || 'Minha Página', // Usa displayName ou um padrão
           bio: `Bem-vindo à minha página! Edite esta bio no painel.`, // Bio padrão
           profileImageUrl: user.photoURL || null, // URL da foto do Google ou null
           theme: 'light', // Tema padrão
-          links: [ // Array de links inicial
+          links: [
+            // Array de links inicial
             {
-              title: "Meu Site Pessoal",
-              url: "https://seusite.com", // URL de exemplo
-              type: "website", // Tipo (pode ser usado no futuro)
+              title: 'Meu Site Pessoal',
+              url: 'https://seusite.com', // URL de exemplo
+              type: 'website', // Tipo (pode ser usado no futuro)
               order: 1, // Ordem de exibição
-              icon: 'globe' // Ícone padrão
-            }
-          ]
+              icon: 'globe', // Ícone padrão
+            },
+          ],
         });
         console.log("Documento 'pages' criado com sucesso com slug:", pageSlug);
       } catch (error) {
         // Log DETALHADO se a criação do 'pages' falhar (provavelmente regras de segurança)
-        console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         console.error("ERRO DETALHADO ao criar documento 'pages':", error);
-        console.error("VERIFIQUE AS REGRAS DE SEGURANÇA DO FIRESTORE!");
-        console.error("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.error('VERIFIQUE AS REGRAS DE SEGURANÇA DO FIRESTORE!');
+        console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         // Não retorna null aqui para que o login funcione, mas o dashboard mostrará o erro
       }
     } else {
-      console.log("Usuário existente:", user.uid);
+      console.log('Usuário existente:', user.uid);
     }
 
     return user; // Retorna o usuário autenticado
   } catch (error) {
     // Captura erros do processo de autenticação do Google (ex: popup bloqueado, erro de rede)
-    console.error("Erro GERAL no processo signInWithGoogle:", error);
+    console.error('Erro GERAL no processo signInWithGoogle:', error);
     // Verifica se é erro de domínio não autorizado (útil para deploy)
     // @ts-expect-error // <--- ALTERAÇÃO REALIZADA AQUI
     if (error.code === 'auth/unauthorized-domain') {
-      alert("Erro: O domínio do site não está autorizado no Firebase. Verifique a configuração de Authentication -> Settings -> Authorized domains.");
+      alert(
+        'Erro: O domínio do site não está autorizado no Firebase. Verifique a configuração de Authentication -> Settings -> Authorized domains.'
+      );
     }
     return null; // Retorna null se a autenticação falhar
   }
@@ -102,8 +113,8 @@ export const signInWithGoogle = async (): Promise<User | null> => {
 export const signOutUser = async (): Promise<void> => {
   try {
     await signOut(auth);
-    console.log("Usuário deslogado com sucesso.");
+    console.log('Usuário deslogado com sucesso.');
   } catch (error) {
-    console.error("Erro ao fazer logout:", error);
+    console.error('Erro ao fazer logout:', error);
   }
 };

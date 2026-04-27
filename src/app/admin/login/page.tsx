@@ -15,13 +15,12 @@ export default function LoginPage() {
     if (user) {
       router.push('/admin/dashboard');
     } else {
-      alert("Houve um erro ao tentar fazer login. Tente novamente.");
+      alert('Houve um erro ao tentar fazer login. Tente novamente.');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
-      
       {/* Lado Esquerdo - Visual / Marketing */}
       <div className="hidden lg:flex lg:w-1/2 bg-blue-600 text-white flex-col justify-center px-12 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-linear-to-br from-blue-600 to-purple-700 opacity-90 z-0"></div>
@@ -32,11 +31,15 @@ export default function LoginPage() {
         <div className="relative z-10">
           <h2 className="text-4xl font-bold mb-6">Bem-vindo de volta!</h2>
           <p className="text-blue-100 text-lg mb-8 leading-relaxed">
-            Gerencie seus links, analise suas métricas e personalize sua página para atrair mais clientes.
+            Gerencie seus links, analise suas métricas e personalize sua página
+            para atrair mais clientes.
           </p>
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
             {/* CORREÇÃO AQUI: Trocamos as aspas duplas por &quot; */}
-            <p className="italic">&quot;Desde que comecei a usar o Meus Links Pro, meus cliques no WhatsApp aumentaram 150%.&quot;</p>
+            <p className="italic">
+              &quot;Desde que comecei a usar o Meus Links Pro, meus cliques no
+              WhatsApp aumentaram 150%.&quot;
+            </p>
             <div className="mt-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/30"></div>
               <span className="font-semibold text-sm">Usuário Satisfeito</span>
@@ -48,12 +51,17 @@ export default function LoginPage() {
       {/* Lado Direito - Formulário */}
       <div className="flex-1 flex flex-col justify-center items-center p-8 lg:p-16 bg-white">
         <div className="w-full max-w-md">
-          <Link href="/" className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 mb-8 transition-colors">
+          <Link
+            href="/"
+            className="inline-flex items-center text-sm text-gray-500 hover:text-blue-600 mb-8 transition-colors"
+          >
             <FaArrowLeft className="mr-2" /> Voltar para Home
           </Link>
 
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Acesse sua conta</h1>
+            <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
+              Acesse sua conta
+            </h1>
             <p className="text-gray-600">Entre para gerenciar seu painel</p>
           </div>
 
@@ -68,12 +76,15 @@ export default function LoginPage() {
 
             <div className="relative flex py-2 items-center">
               <div className="grow border-t border-gray-200"></div>
-              <span className="shrink-0 mx-4 text-gray-400 text-xs uppercase">Seguro e Rápido</span>
+              <span className="shrink-0 mx-4 text-gray-400 text-xs uppercase">
+                Seguro e Rápido
+              </span>
               <div className="grow border-t border-gray-200"></div>
             </div>
 
             <p className="text-center text-xs text-gray-400 mt-8">
-              Ao entrar, você concorda com nossos Termos de Serviço e Política de Privacidade.
+              Ao entrar, você concorda com nossos Termos de Serviço e Política
+              de Privacidade.
             </p>
           </div>
         </div>
