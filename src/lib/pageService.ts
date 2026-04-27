@@ -95,20 +95,33 @@ export const getPageDataForUser = async (
 /**
  * Adiciona um novo link
  */
-export const addLinkToPage = async (
-  pageSlug: string,
-  newLink: LinkData
-): Promise<void> => {
+export async function addLinkToPage(pageSlug: string, newLink: LinkData) {
   try {
-    const pageDocRef = doc(db, 'pages', pageSlug);
-    await updateDoc(pageDocRef, {
-      links: arrayUnion(newLink),
+    const pageRef = doc(db, 'pages', pageSlug);
+    const pageSnap = await getDoc(pageRef);
+
+    if (!pageSnap.exists()) throw new Error("Página não encontrada.");
+
+    const currentLinks = (pageSnap.data()?.links || []) as LinkData[];
+    
+    // Define a ordem: pega o maior 'order' atual e soma 1
+    const newOrder = currentLinks.length > 0 
+      ? Math.max(...currentLinks.map(l => l.order || 0)) + 1 
+      : 1;
+
+    const linkWithOrder = { ...newLink, order: newOrder };
+
+    // Atualiza o documento inteiro com o novo array ordenado
+    await updateDoc(pageRef, {
+      links: [...currentLinks, linkWithOrder]
     });
+
+    return true;
   } catch (error) {
-    console.error('Erro ao adicionar novo link:', error);
-    throw new Error('Não foi possível adicionar o link.');
+    console.error("Erro ao adicionar link com consistência:", error);
+    throw error;
   }
-};
+}
 
 /**
  * Remove um link
@@ -363,3 +376,4 @@ export async function getAllUsers() {
     return [];
   }
 }
+
