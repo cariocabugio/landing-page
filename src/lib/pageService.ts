@@ -338,3 +338,28 @@ export const updateUserPlan = async (
     throw new Error('Falha ao atualizar o plano do usuário.');
   }
 };
+
+/**
+ * Busca todos os usuários cadastrados na coleção 'users' do Firestore.
+ * Essencial para o Painel Administrativo ter visão global da base.
+ */
+export async function getAllUsers() {
+  try {
+    const usersRef = collection(db, 'users');
+    const snapshot = await getDocs(usersRef);
+    
+    if (snapshot.empty) return [];
+
+    return snapshot.docs.map((doc) => ({
+      uid: doc.id,
+      ...doc.data(),
+    })) as (UserData & { uid: string })[];
+  } catch (error: any) {
+    // Se o erro for 'permission-denied', avisamos no console de forma clara
+    if (error.code === 'permission-denied') {
+      console.warn('Atenção: Você não tem permissão de Admin no Firestore para listar usuários.');
+    }
+    console.error('Erro detalhado getAllUsers:', error);
+    return [];
+  }
+}

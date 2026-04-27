@@ -19,6 +19,7 @@ import {
   UserData,
   findUserByEmail,
   updateUserPlan,
+  getAllUsers, // <-- NOVA FUNÇÃO
 } from '@/lib/pageService';
 import {
   FaLock,
@@ -30,6 +31,12 @@ import {
   FaSave,
   FaQrcode,
   FaChartLine,
+  FaUsers,
+  FaCrown,
+  FaChartPie,
+  FaIdBadge,
+  FaLink,
+  FaUserEdit,
 } from 'react-icons/fa';
 import Image from 'next/image';
 
@@ -136,6 +143,9 @@ export default function DashboardPage() {
   const { user, userData, loading } = useAuth();
   const router = useRouter();
 
+  // Sistema de Tabs (Navegação Interna)
+  const [activeTab, setActiveTab] = useState<'personal' | 'admin'>('personal');
+
   // Estado Principal
   const [pageData, setPageData] = useState<PageData | null>(null);
   const [pageSlug, setPageSlug] = useState<string | null>(null);
@@ -176,7 +186,7 @@ export default function DashboardPage() {
   // Verifica se o plano é Pro
   const isProPlan = targetUserId ? true : userData?.plan === 'pro';
 
-  // Estados Admin (Busca)
+  // Estados Admin (Busca e Lista)
   const [searchEmail, setSearchEmail] = useState('');
   const [foundUser, setFoundUser] = useState<
     (UserData & { uid: string }) | null
@@ -184,6 +194,11 @@ export default function DashboardPage() {
   const [adminMessage, setAdminMessage] = useState<string | null>(null);
   const [isSearching, setIsSearching] = useState(false);
   const [isUpdatingPlan, setIsUpdatingPlan] = useState(false);
+
+  // --- NOVOS ESTADOS PARA LISTAGEM GERAL DE USUÁRIOS ---
+  const [allUsers, setAllUsers] = useState<(UserData & { uid: string })[]>([]);
+  const [isLoadingAllUsers, setIsLoadingAllUsers] = useState(false);
+  const [errorAllUsers, setErrorAllUsers] = useState<string | null>(null);
 
   const whatsappNumber = '5579996337995';
 
@@ -275,11 +290,34 @@ export default function DashboardPage() {
     }
   }, [user, targetUserId]);
 
+  // Carrega todos os usuários (apenas quando o admin estiver visualizando a aba Gestão SaaS)
+  const fetchAllUsers = useCallback(async () => {
+    if (!isAdmin || targetUserId) return;
+    setIsLoadingAllUsers(true);
+    setErrorAllUsers(null);
+    try {
+      const users = await getAllUsers();
+      setAllUsers(users);
+    } catch (error) {
+      console.error('Erro ao buscar todos os usuários:', error);
+      setErrorAllUsers('Falha ao carregar a lista de usuários.');
+    } finally {
+      setIsLoadingAllUsers(false);
+    }
+  }, [isAdmin, targetUserId]);
+
   useEffect(() => {
     if (!loading && user) {
       fetchPageData();
     }
   }, [user, loading, fetchPageData]);
+
+  // Efeito para buscar a lista geral de usuários quando a aba admin estiver ativa
+  useEffect(() => {
+    if (activeTab === 'admin' && isAdmin && !targetUserId) {
+      fetchAllUsers();
+    }
+  }, [activeTab, isAdmin, targetUserId, fetchAllUsers]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -297,12 +335,14 @@ export default function DashboardPage() {
     setAdminMessage(null);
     setFoundUser(null);
     setSearchEmail('');
+    setActiveTab('personal'); // Força a aba pessoal para ver a página do cliente
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleExitAdminMode = () => {
     setTargetUserId(null);
     setTargetUserEmail(null);
+    setActiveTab('admin'); // Volta para o painel admin ao sair
   };
 
   const generateWhatsAppLink = (
@@ -575,15 +615,23 @@ export default function DashboardPage() {
     }
   };
 
-  const handleChangePlan = async (newPlan: 'pro' | 'free') => {
-    if (!foundUser) return;
+  const handleChangePlan = async (newPlan: 'pro' | 'free', userObj?: (UserData & { uid: string })) => {
+    const targetUser = userObj || foundUser;
+    if (!targetUser) return;
     setIsUpdatingPlan(true);
     setAdminMessage(null);
     try {
-      await updateUserPlan(foundUser.uid, newPlan);
-      setFoundUser((prev) => (prev ? { ...prev, plan: newPlan } : null));
+      await updateUserPlan(targetUser.uid, newPlan);
+      // Atualiza o usuário no estado local (busca ou lista)
+      if (userObj) {
+        setAllUsers(prev =>
+          prev.map(u => u.uid === targetUser.uid ? { ...u, plan: newPlan } : u)
+        );
+      } else {
+        setFoundUser(prev => prev ? { ...prev, plan: newPlan } : null);
+      }
       setAdminMessage(
-        `Plano do usuário ${foundUser.email} atualizado para '${newPlan}' com sucesso!`
+        `Plano do usuário ${targetUser.email} atualizado para '${newPlan}' com sucesso!`
       );
     } catch (error) {
       console.error('Erro ao atualizar plano:', error);
@@ -598,7 +646,12 @@ export default function DashboardPage() {
   if (loading || (!isAdmin && isLoadingData)) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <p className="text-xl">Carregando...</p>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-sm font-medium text-gray-500">
+            Carregando ambiente...
+          </p>
+        </div>
       </div>
     );
   }
@@ -614,622 +667,871 @@ export default function DashboardPage() {
       cliques: link.clicks || 0,
     })) || [];
 
+  // Cálculo dos KPIs
+  const totalUsers = allUsers.length;
+  const proUsers = allUsers.filter((u) => u.plan === 'pro').length;
+  const conversionRate = totalUsers > 0 ? ((proUsers / totalUsers) * 100).toFixed(1) + '%' : '--';
+
   return (
     <div className="min-h-screen bg-gray-50 relative">
+      {/* Banner de Super Admin Ativo */}
       {targetUserId && (
         <div className="bg-red-600 text-white px-4 py-3 shadow-md sticky top-0 z-50">
-          <div className="max-w-4xl mx-auto flex justify-between items-center">
-            <div className="flex items-center gap-2 font-bold">
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div className="flex items-center gap-2 font-bold text-sm sm:text-base">
               <FaUserCog className="text-xl" />
-              <span>MODO SUPER ADMIN: Gerenciando {targetUserEmail}</span>
+              <span>SUPER ADMIN: Gerenciando perfil de {targetUserEmail}</span>
             </div>
             <button
               onClick={handleExitAdminMode}
-              className="bg-white text-red-600 px-4 py-1 rounded-full text-sm font-bold hover:bg-gray-100 transition flex items-center gap-2"
+              className="bg-white text-red-600 px-4 py-1.5 rounded-full text-sm font-bold hover:bg-gray-100 transition flex items-center gap-2 shadow-sm"
             >
-              <FaArrowLeft /> Sair e Voltar
+              <FaArrowLeft /> Encerrar Sessão Cliente
             </button>
           </div>
         </div>
       )}
 
+      {/* Navbar Principal */}
       <nav
-        className={`bg-white shadow-sm ${targetUserId ? '' : 'sticky top-0 z-10'}`}
+        className={`bg-white border-b border-gray-200 ${targetUserId ? '' : 'sticky top-0 z-40'}`}
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="shrink-0 flex items-center">
-              <h1 className="text-xl font-bold text-gray-800">
-                Meu Painel{' '}
-                {isAdmin && (
-                  <span className="text-red-600 text-sm">(Admin)</span>
-                )}
+          <div className="flex justify-between h-16 items-center">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-xl">
+                L
+              </div>
+              <h1 className="text-xl font-bold text-gray-900 hidden sm:block">
+                Meus Links <span className="text-blue-600">Pro</span>
               </h1>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
+              {isAdmin && !targetUserId && (
+                <span className="hidden sm:flex items-center gap-1 text-xs font-bold px-2 py-1 bg-red-100 text-red-700 rounded border border-red-200 uppercase tracking-wider">
+                  <FaCrown /> Acesso Root
+                </span>
+              )}
               <button
                 onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md text-sm transition duration-150 ease-in-out"
+                className="text-gray-500 hover:text-red-600 font-medium text-sm transition-colors"
               >
-                Sair
+                Sair do sistema
               </button>
             </div>
           </div>
         </div>
+
+        {/* --- TABS DE NAVEGAÇÃO PARA ADMINS --- */}
+        {isAdmin && !targetUserId && (
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex space-x-6 border-t border-gray-100 pt-2">
+              <button
+                onClick={() => setActiveTab('personal')}
+                className={`pb-3 text-sm font-medium border-b-2 transition-colors ${
+                  activeTab === 'personal'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Meu Perfil
+              </button>
+              <button
+                onClick={() => setActiveTab('admin')}
+                className={`pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
+                  activeTab === 'admin'
+                    ? 'border-red-600 text-red-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                Gestão SaaS <FaLock className="text-xs opacity-70" />
+              </button>
+            </div>
+          </div>
+        )}
       </nav>
 
       <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white p-6 rounded-lg shadow mb-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-900">
-                {targetUserId
-                  ? `Editando: ${pageData?.title}`
-                  : `Bem-vindo, ${pageData?.title || userData?.displayName || user.displayName || 'Usuário'}!`}
+        {/* ========================================= */}
+        {/* RENDERIZAÇÃO DA ABA: GESTÃO SAAS (ADMIN)  */}
+        {/* ========================================= */}
+        {activeTab === 'admin' && isAdmin && !targetUserId ? (
+          <div className="animate-in fade-in duration-300">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Painel de Controle SaaS
               </h2>
-              <span
-                className={`text-sm font-medium px-3 py-1 rounded-full mt-2 inline-block ${
-                  isProPlan
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-blue-100 text-blue-800'
-                }`}
-              >
-                Plano: {isProPlan ? 'Pro' : 'Gratuito'}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="relative group">
-                {pageData?.profileImageUrl ? (
-                  <Image
-                    src={pageData.profileImageUrl}
-                    alt="Foto de Perfil"
-                    width={80}
-                    height={80}
-                    className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
-                  />
-                ) : (
-                  <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-gray-400">
-                    <FaCamera size={24} />
-                  </div>
-                )}
-                <label
-                  htmlFor="profile-upload"
-                  className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors shadow-md"
-                >
-                  <FaCamera size={14} />
-                  <input
-                    id="profile-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleProfileImageUpload}
-                    disabled={isUploadingProfile}
-                  />
-                </label>
-                {isUploadingProfile && (
-                  <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <p className="text-gray-700 mb-2">
-            Gerencie sua página de links abaixo.
-          </p>
-        </div>
-
-        {/* --- SEÇÃO DE ANALYTICS (GRÁFICOS) --- */}
-        {pageData?.links && pageData.links.length > 0 && (
-          <div className="bg-white p-6 rounded-lg shadow mb-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <FaChartLine className="text-blue-600" /> Desempenho dos Links
-              {!isProPlan && (
-                <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded">
-                  Prévia
-                </span>
-              )}
-            </h3>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <XAxis
-                    dataKey="name"
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(value) => `${value}`}
-                  />
-                  <Tooltip
-                    cursor={{ fill: 'transparent' }}
-                    contentStyle={{ borderRadius: '8px' }}
-                  />
-                  <Bar dataKey="cliques" radius={[4, 4, 0, 0]}>
-                    {chartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={index % 2 === 0 ? '#2563eb' : '#3b82f6'}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-
-        {pageSlug && (
-          <>
-            <div className="bg-white p-6 rounded-lg shadow mb-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Sua Página está no Ar!
-              </h3>
-
-              <div className="flex flex-col sm:flex-row items-center gap-2 p-3 bg-gray-100 rounded-md w-full mb-4">
-                <span className="text-blue-600 truncate font-mono text-sm w-full block">
-                  {`${typeof window !== 'undefined' ? window.location.origin : ''}/${pageSlug}`}
-                </span>
-                <button
-                  onClick={handleCopyUrl}
-                  className={`w-full sm:w-auto text-white font-medium py-2 px-4 rounded-md text-sm transition-all duration-200 bg-blue-600 hover:bg-blue-700`}
-                >
-                  {copyButtonText}
-                </button>
-                <button
-                  onClick={() => setShowQRCode(!showQRCode)}
-                  className="w-full sm:w-auto bg-gray-800 text-white font-medium py-2 px-4 rounded-md text-sm hover:bg-gray-900 flex items-center justify-center gap-2"
-                >
-                  <FaQrcode /> QR Code
-                </button>
-              </div>
-
-              {/* MODAL QR CODE */}
-              {showQRCode && (
-                <div
-                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-                  onClick={() => setShowQRCode(false)}
-                >
-                  <div
-                    className="bg-white p-6 rounded-xl shadow-2xl text-center max-w-sm w-full animate-in fade-in zoom-in duration-200"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <h3 className="text-lg font-bold mb-4">Seu QR Code</h3>
-                    <div className="bg-white p-2 inline-block rounded-lg shadow-inner mb-4 border border-gray-200">
-                      <QRCodeCanvas
-                        value={`${typeof window !== 'undefined' ? window.location.origin : ''}/${pageSlug}`}
-                        size={200}
-                        level={'H'}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-500 mb-4">
-                      Escaneie para acessar seu perfil.
-                    </p>
-                    <button
-                      onClick={() => setShowQRCode(false)}
-                      className="w-full bg-gray-200 py-2 rounded-lg font-medium hover:bg-gray-300"
-                    >
-                      Fechar
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow mb-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Informações do Perfil
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Nome / Título
-                  </label>
-                  <input
-                    type="text"
-                    value={editingProfileTitle}
-                    onChange={(e) => setEditingProfileTitle(e.target.value)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Bio (Descrição)
-                  </label>
-                  <textarea
-                    value={editingProfileBio}
-                    onChange={(e) => setEditingProfileBio(e.target.value)}
-                    rows={3}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                  />
-                </div>
-                <button
-                  onClick={handleSaveProfileInfo}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 font-medium flex items-center gap-2"
-                >
-                  <FaSave /> Salvar Informações
-                </button>
-              </div>
-            </div>
-
-            <div
-              className="bg-white p-6 rounded-lg shadow mb-8"
-              id="appearance-section"
-            >
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Aparência
-              </h3>
-              <p className="text-gray-600 mb-4">
-                Escolha um tema para sua página pública.
+              <p className="text-gray-600">
+                Visão geral e gerenciamento da base de clientes da plataforma.
               </p>
+            </div>
 
-              <div className="mb-6 p-4 bg-gray-50 rounded border">
-                <h4 className="font-medium mb-2 flex items-center gap-2">
-                  <FaImage /> Fundo Personalizado{' '}
-                  {!isProPlan && <FaLock className="text-gray-400 w-3 h-3" />}
-                </h4>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleBackgroundImageUpload}
-                  disabled={!isProPlan || isUploadingBg}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                />
-                {isUploadingBg && (
-                  <p className="text-xs text-indigo-600 mt-1">Enviando...</p>
-                )}
+            {/* KPIs / Stat Cards - agora dinâmicos */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-xl">
+                  <FaUsers />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 font-medium">
+                    Total de Usuários
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {isLoadingAllUsers ? '...' : totalUsers}
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div className="w-12 h-12 bg-green-100 text-green-600 rounded-lg flex items-center justify-center text-xl">
+                  <FaCrown />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 font-medium">
+                    Assinantes PRO
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {isLoadingAllUsers ? '...' : proUsers}
+                  </p>
+                </div>
+              </div>
+              <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center gap-4">
+                <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center text-xl">
+                  <FaChartPie />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 font-medium">
+                    Conversão (Free → Pro)
+                  </p>
+                  <p className="text-2xl font-bold text-gray-900">
+                    {isLoadingAllUsers ? '...' : conversionRate}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Tabela com todos os usuários */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+              <div className="bg-gray-50 border-b border-gray-200 p-5">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <FaUsers className="text-gray-400" /> Todos os Usuários
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Lista completa dos usuários cadastrados na plataforma.
+                </p>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-                {themes.map((theme) => {
-                  const isActive = (pageData?.theme || 'light') === theme.name;
-                  const isDisabledByPlan = theme.isPro && !isProPlan;
+              {isLoadingAllUsers ? (
+                <div className="p-6 text-center">
+                  <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                  <p className="mt-2 text-sm text-gray-500">Carregando usuários...</p>
+                </div>
+              ) : errorAllUsers ? (
+                <div className="p-6 bg-red-50 text-red-700 text-sm font-medium">
+                  {errorAllUsers}
+                </div>
+              ) : allUsers.length === 0 ? (
+                <div className="p-6 text-center text-gray-500">
+                  Nenhum usuário encontrado.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Nome
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          E-mail
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Plano
+                        </th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Ações
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {allUsers.map((usr) => (
+                        <tr key={usr.uid} className="hover:bg-gray-50">
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {usr.displayName || 'Sem nome'}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {usr.email}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span
+                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                usr.plan === 'pro'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {usr.plan === 'pro' ? 'PRO' : 'Free'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button
+                              onClick={() => handleManageUser(usr.uid, usr.email)}
+                              className="text-indigo-600 hover:text-indigo-900 mr-3"
+                              title="Logar como este usuário"
+                            >
+                              <FaUserEdit className="inline" /> Gerenciar
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleChangePlan(
+                                  usr.plan === 'free' ? 'pro' : 'free',
+                                  usr
+                                )
+                              }
+                              disabled={isUpdatingPlan}
+                              className={`${
+                                usr.plan === 'free'
+                                  ? 'text-green-600 hover:text-green-900'
+                                  : 'text-yellow-600 hover:text-yellow-900'
+                              }`}
+                              title="Alterar plano"
+                            >
+                              {usr.plan === 'free' ? 'Upgrade' : 'Rebaixar'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
 
-                  return (
-                    <button
-                      key={theme.name}
-                      onClick={() => handleThemeChange(theme.name)}
-                      disabled={isDisabledByPlan}
-                      className={`relative p-4 rounded-lg border-2 text-center transition-all duration-150 ease-in-out focus:outline-none ${
-                        isActive
-                          ? 'border-blue-600 ring-2 ring-blue-300'
-                          : isDisabledByPlan
-                            ? 'border-gray-200 opacity-50 cursor-not-allowed'
-                            : 'border-gray-300 hover:border-gray-400'
+            {/* Módulo de Busca individual (mantido) */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+              <div className="bg-gray-50 border-b border-gray-200 p-5">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                  <FaSearch className="text-gray-400" /> Buscar Cliente Específico
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Localize um usuário pelo email para ações rápidas.
+                </p>
+              </div>
+
+              <div className="p-6">
+                <form
+                  onSubmit={handleSearchUser}
+                  className="flex flex-col sm:flex-row gap-3 mb-6"
+                >
+                  <div className="relative flex-grow">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FaIdBadge className="text-gray-400" />
+                    </div>
+                    <input
+                      type="email"
+                      value={searchEmail}
+                      onChange={(e) => setSearchEmail(e.target.value)}
+                      placeholder="email@cliente.com"
+                      required
+                      className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isSearching}
+                    className="bg-gray-900 hover:bg-black text-white font-medium py-2.5 px-6 rounded-lg transition duration-200 flex items-center justify-center disabled:opacity-70 whitespace-nowrap"
+                  >
+                    {isSearching ? (
+                      <span className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Buscando...
+                      </span>
+                    ) : (
+                      'Localizar'
+                    )}
+                  </button>
+                </form>
+
+                {adminMessage && (
+                  <div
+                    className={`p-4 mb-6 rounded-lg text-sm font-medium ${
+                      adminMessage.includes('sucesso')
+                        ? 'bg-green-50 text-green-800 border border-green-200'
+                        : adminMessage.includes('não encontrado')
+                          ? 'bg-yellow-50 text-yellow-800 border border-yellow-200'
+                          : 'bg-red-50 text-red-800 border border-red-200'
+                    }`}
+                  >
+                    {adminMessage}
+                  </div>
+                )}
+
+                {/* Cartão de Cliente (CRM Flow) */}
+                {foundUser && (
+                  <div className="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
+                    <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div>
+                        <h4 className="text-lg font-bold text-gray-900">
+                          {foundUser.displayName || 'Usuário sem nome'}
+                        </h4>
+                        <p className="text-sm text-gray-500">
+                          {foundUser.email}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1 font-mono">
+                          ID: {foundUser.uid}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                          Status do Plano
+                        </span>
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-bold ${
+                            foundUser.plan === 'pro'
+                              ? 'bg-green-100 text-green-800 border border-green-200'
+                              : 'bg-gray-100 text-gray-700 border border-gray-200'
+                          }`}
+                        >
+                          {foundUser.plan === 'pro' ? 'PRO ATIVO' : 'GRATUITO'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-5 bg-gray-50 flex flex-wrap gap-3">
+                      <button
+                        onClick={() =>
+                          handleChangePlan(
+                            foundUser.plan === 'free' ? 'pro' : 'free'
+                          )
+                        }
+                        disabled={isUpdatingPlan}
+                        className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                          foundUser.plan === 'free'
+                            ? 'bg-green-600 hover:bg-green-700 text-white shadow-sm shadow-green-200'
+                            : 'bg-yellow-100 hover:bg-yellow-200 text-yellow-800 border border-yellow-300'
+                        }`}
+                      >
+                        {foundUser.plan === 'free'
+                          ? 'Fazer Upgrade para PRO'
+                          : 'Rebaixar para Gratuito'}
+                      </button>
+
+                      <button
+                        onClick={() =>
+                          handleManageUser(foundUser.uid, foundUser.email)
+                        }
+                        className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all shadow-sm shadow-blue-200 flex items-center justify-center gap-2"
+                      >
+                        <FaUserCog /> Logar como Cliente
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setFoundUser(null);
+                          setSearchEmail('');
+                          setAdminMessage(null);
+                        }}
+                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium text-sm transition-all"
+                      >
+                        Limpar
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* ========================================= */
+          /* RENDERIZAÇÃO DA ABA: MEU PERFIL (PESSOAL) */
+          /* ========================================= */
+          <div className="animate-in fade-in duration-300">
+            {/* O cabeçalho de boas-vindas do cliente */}
+            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {targetUserId
+                      ? `Editando Perfil de: ${pageData?.title || targetUserEmail}`
+                      : `Bem-vindo(a), ${pageData?.title || userData?.displayName || user.displayName || 'Usuário'}!`}
+                  </h2>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span
+                      className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider ${
+                        isProPlan
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm'
+                          : 'bg-gray-100 text-gray-600 border border-gray-200'
                       }`}
-                      aria-pressed={isActive}
-                      aria-disabled={isDisabledByPlan}
+                    >
+                      {isProPlan ? 'Plano Pro' : 'Plano Gratuito'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="relative group">
+                    {pageData?.profileImageUrl ? (
+                      <Image
+                        src={pageData.profileImageUrl}
+                        alt="Foto de Perfil"
+                        width={84}
+                        height={84}
+                        className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 border-2 border-dashed border-gray-300">
+                        <FaCamera size={24} />
+                      </div>
+                    )}
+                    <label
+                      htmlFor="profile-upload"
+                      className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors shadow-lg ring-2 ring-white"
+                    >
+                      <FaCamera size={14} />
+                      <input
+                        id="profile-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleProfileImageUpload}
+                        disabled={isUploadingProfile}
+                      />
+                    </label>
+                    {isUploadingProfile && (
+                      <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* --- SEÇÃO DE ANALYTICS (GRÁFICOS) --- */}
+            {pageData?.links && pageData.links.length > 0 && (
+              <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+                <h3 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                  <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
+                    <FaChartLine />
+                  </div>
+                  Desempenho dos Links
+                  {!isProPlan && (
+                    <span className="text-xs font-semibold bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded border border-yellow-200 ml-2">
+                      Prévia Demo
+                    </span>
+                  )}
+                </h3>
+                <div className="h-64 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData}>
+                      <XAxis
+                        dataKey="name"
+                        stroke="#9ca3af"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        dy={10}
+                      />
+                      <YAxis
+                        stroke="#9ca3af"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(value) => `${value}`}
+                        dx={-10}
+                      />
+                      <Tooltip
+                        cursor={{ fill: '#f3f4f6' }}
+                        contentStyle={{
+                          borderRadius: '12px',
+                          border: 'none',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        }}
+                      />
+                      <Bar dataKey="cliques" radius={[6, 6, 0, 0]}>
+                        {chartData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={index % 2 === 0 ? '#3b82f6' : '#60a5fa'}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {pageSlug && (
+              <>
+                {/* Link Publico e QR Code */}
+                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 rounded-xl shadow-md mb-8 text-white">
+                  <h3 className="text-lg font-bold mb-3">Sua Página está Online! 🚀</h3>
+                  <div className="flex flex-col sm:flex-row items-center gap-3 bg-white/10 p-2 rounded-lg backdrop-blur-sm border border-white/20">
+                    <span className="truncate font-mono text-sm w-full block pl-2 font-medium opacity-90">
+                      {`${typeof window !== 'undefined' ? window.location.origin : ''}/${pageSlug}`}
+                    </span>
+                    <div className="flex gap-2 w-full sm:w-auto">
+                      <button
+                        onClick={handleCopyUrl}
+                        className="w-full sm:w-auto bg-white text-blue-700 font-bold py-2 px-5 rounded-md text-sm transition-all hover:bg-gray-50 shadow-sm"
+                      >
+                        {copyButtonText}
+                      </button>
+                      <button
+                        onClick={() => setShowQRCode(!showQRCode)}
+                        className="w-full sm:w-auto bg-black/30 text-white hover:bg-black/40 font-bold py-2 px-4 rounded-md text-sm flex items-center justify-center gap-2 transition-all border border-white/10"
+                      >
+                        <FaQrcode /> QR Code
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* MODAL QR CODE */}
+                  {showQRCode && (
+                    <div
+                      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+                      onClick={() => setShowQRCode(false)}
                     >
                       <div
-                        className={`h-10 w-full rounded mb-2 border border-gray-200 ${theme.colorClass}`}
-                      ></div>
-                      <span className="text-sm font-medium text-gray-700 flex items-center justify-center gap-1">
-                        {theme.label}
-                        {isDisabledByPlan && (
-                          <FaLock className="text-gray-400 w-3 h-3" />
-                        )}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {!isProPlan && !targetUserId && (
-                <div
-                  className="mt-8 pt-6 border-t border-gray-200"
-                  id="upgrade-section"
-                >
-                  <h4 className="text-lg font-semibold text-center text-gray-800 mb-4">
-                    ✨ Desbloqueie todos os temas com o Plano Pro! ✨
-                  </h4>
-                  <p className="text-center text-gray-600 mb-6">
-                    Escolha seu plano e fale conosco no WhatsApp para ativar:
-                  </p>
-                  <div className="flex flex-col sm:flex-row justify-center gap-4">
-                    <a
-                      href={generateWhatsAppLink('Mensal', '9,99')}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out"
-                    >
-                      Pro Mensal - R$9,99
-                    </a>
-                    <a
-                      href={generateWhatsAppLink('Anual', '90,00')}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 ease-in-out"
-                    >
-                      Pro Anual - R$90,00{' '}
-                      <span className="text-xs opacity-80">(Economize!)</span>
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow mb-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Adicionar Novo Link
-              </h3>
-              <form onSubmit={handleAddLink} className="space-y-4">
-                <div>
-                  <label
-                    htmlFor="linkTitle"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Título
-                  </label>
-                  <input
-                    required
-                    type="text"
-                    id="linkTitle"
-                    value={newLinkTitle}
-                    onChange={(e) => setNewLinkTitle(e.target.value)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Ex: Meu Portfólio"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="linkUrl"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    URL
-                  </label>
-                  <input
-                    required
-                    type="url"
-                    id="linkUrl"
-                    value={newLinkUrl}
-                    onChange={(e) => setNewLinkUrl(e.target.value)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="https://..."
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="linkIcon"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Ícone (opcional)
-                  </label>
-                  <input
-                    type="text"
-                    id="linkIcon"
-                    value={newLinkIcon}
-                    onChange={(e) => setNewLinkIcon(e.target.value)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Ex: github, instagram, linkedin, globe"
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Use nomes em minúsculo. (ex: github, instagram, globe, link)
-                  </p>
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out"
-                >
-                  Adicionar Link
-                </button>
-              </form>
-            </div>
-
-            <div className="mt-8">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">
-                Meus Links (Arraste para reordenar)
-              </h3>
-              <div className="bg-white p-6 rounded-lg shadow">
-                {pageData?.links && pageData.links.length > 0 ? (
-                  <DndContext
-                    sensors={sensors}
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext
-                      items={pageData.links.map((l, idx) => l.url + idx)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <div className="space-y-3">
-                        {pageData.links.map((link, index) => {
-                          if (editingIndex === index) {
-                            return (
-                              <div
-                                key={link.url + index}
-                                className="p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-inner mb-3"
-                              >
-                                <div className="space-y-3">
-                                  <div>
-                                    <label className="text-xs font-medium text-gray-500">
-                                      Título
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={editingTitle}
-                                      onChange={(e) =>
-                                        setEditingTitle(e.target.value)
-                                      }
-                                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="text-xs font-medium text-gray-500">
-                                      URL
-                                    </label>
-                                    <input
-                                      type="url"
-                                      value={editingUrl}
-                                      onChange={(e) =>
-                                        setEditingUrl(e.target.value)
-                                      }
-                                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                                    />
-                                  </div>
-                                  <div>
-                                    <label className="text-xs font-medium text-gray-500">
-                                      Ícone
-                                    </label>
-                                    <input
-                                      type="text"
-                                      value={editingIcon}
-                                      onChange={(e) =>
-                                        setEditingIcon(e.target.value)
-                                      }
-                                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm"
-                                      placeholder="Ícone (opcional)"
-                                    />
-                                  </div>
-                                  <div className="flex justify-end space-x-2 pt-2">
-                                    <button
-                                      onClick={handleCancelEdit}
-                                      className="bg-gray-200 text-gray-800 hover:bg-gray-300 font-semibold py-1 px-3 rounded-md text-sm"
-                                    >
-                                      Cancelar
-                                    </button>
-                                    <button
-                                      onClick={() => handleUpdateLink(index)}
-                                      className="bg-green-600 text-white hover:bg-green-700 font-semibold py-1 px-3 rounded-md text-sm"
-                                    >
-                                      Salvar
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          }
-
-                          return (
-                            <SortableLinkItem
-                              key={link.url + index}
-                              link={link}
-                              index={index}
-                              onEdit={() => handleEditClick(link, index)}
-                              onDelete={() => handleDeleteLink(link)}
-                              editingIndex={editingIndex}
-                            />
-                          );
-                        })}
+                        className="bg-white p-8 rounded-2xl shadow-2xl text-center max-w-sm w-full animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <h3 className="text-xl font-bold mb-4 text-gray-900">Seu QR Code Exclusivo</h3>
+                        <div className="bg-gray-50 p-4 inline-block rounded-xl border border-gray-200 mb-6 shadow-inner">
+                          <QRCodeCanvas
+                            value={`${typeof window !== 'undefined' ? window.location.origin : ''}/${pageSlug}`}
+                            size={200}
+                            level={'H'}
+                            fgColor="#111827"
+                          />
+                        </div>
+                        <button
+                          onClick={() => setShowQRCode(false)}
+                          className="w-full bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-black transition-colors"
+                        >
+                          Fechar
+                        </button>
                       </div>
-                    </SortableContext>
-                  </DndContext>
-                ) : (
-                  <p className="text-center text-gray-500 py-4">
-                    Você ainda não tem links. Adicione um acima!
-                  </p>
-                )}
-              </div>
-            </div>
-          </>
-        )}
+                    </div>
+                  )}
+                </div>
 
-        {isAdmin && !targetUserId && (
-          <div className="mt-12 border-t-2 border-red-600 pt-8">
-            <h3 className="text-2xl font-bold text-red-700 mb-6 text-center">
-              🛡️ Painel do Super Admin 🛡️
-            </h3>
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-red-200">
-              <h4 className="text-lg font-semibold text-gray-800 mb-4">
-                Gerenciar Planos de Usuários
-              </h4>
-              <form
-                onSubmit={handleSearchUser}
-                className="flex flex-col sm:flex-row gap-2 mb-4"
-              >
-                <input
-                  type="email"
-                  value={searchEmail}
-                  onChange={(e) => setSearchEmail(e.target.value)}
-                  placeholder="Digite o email do usuário"
-                  required
-                  className="flex-grow px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm"
-                />
-                <button
-                  type="submit"
-                  disabled={isSearching}
-                  className="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-150 ease-in-out flex items-center justify-center disabled:opacity-50"
-                >
-                  <FaSearch className="mr-2 h-4 w-4" />{' '}
-                  {isSearching ? 'Buscando...' : 'Buscar Usuário'}
-                </button>
-              </form>
-
-              {adminMessage && (
-                <p
-                  className={`text-sm mb-4 p-3 rounded-md ${
-                    adminMessage.includes('sucesso')
-                      ? 'bg-green-100 text-green-700'
-                      : adminMessage.includes('não encontrado')
-                        ? 'bg-yellow-100 text-yellow-700'
-                        : 'bg-red-100 text-red-700'
-                  }`}
-                >
-                  {adminMessage}
-                </p>
-              )}
-
-              {foundUser && (
-                <div className="mt-4 p-4 border border-gray-200 rounded-md bg-gray-50">
-                  <p className="text-sm text-gray-700">
-                    <span className="font-semibold">Usuário:</span>{' '}
-                    {foundUser.displayName || '(Sem nome)'} ({foundUser.email})
-                  </p>
-                  <p className="text-sm text-gray-700">
-                    <span className="font-semibold">UID:</span> {foundUser.uid}
-                  </p>
-                  <p className="text-sm text-gray-700 mb-3">
-                    <span className="font-semibold">Plano Atual:</span>
-                    <span
-                      className={`ml-1 font-medium px-2 py-0.5 rounded ${foundUser.plan === 'pro' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}
-                    >
-                      {foundUser.plan === 'pro' ? 'Pro' : 'Gratuito'}
-                    </span>
-                  </p>
-                  <div className="flex flex-wrap gap-2">
+                {/* Informações do Perfil */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-5">
+                    Detalhes do Perfil
+                  </h3>
+                  <div className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Nome de Exibição
+                      </label>
+                      <input
+                        type="text"
+                        value={editingProfileTitle}
+                        onChange={(e) => setEditingProfileTitle(e.target.value)}
+                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        Biografia
+                      </label>
+                      <textarea
+                        value={editingProfileBio}
+                        onChange={(e) => setEditingProfileBio(e.target.value)}
+                        rows={3}
+                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none"
+                      />
+                    </div>
                     <button
-                      onClick={() =>
-                        handleChangePlan(
-                          foundUser.plan === 'free' ? 'pro' : 'free'
-                        )
-                      }
-                      disabled={isUpdatingPlan}
-                      className={`px-3 py-1 rounded text-white text-sm disabled:opacity-50 ${foundUser.plan === 'free' ? 'bg-green-600 hover:bg-green-700' : 'bg-yellow-600 hover:bg-yellow-700'}`}
+                      onClick={handleSaveProfileInfo}
+                      className="bg-gray-900 text-white px-6 py-2.5 rounded-lg hover:bg-black font-semibold flex items-center gap-2 transition-colors w-full sm:w-auto justify-center"
                     >
-                      {foundUser.plan === 'free'
-                        ? 'Ativar Pro'
-                        : 'Desativar Pro'}
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        handleManageUser(foundUser.uid, foundUser.email)
-                      }
-                      className="px-3 py-1 rounded bg-blue-600 text-white text-sm flex items-center gap-1 hover:bg-blue-700"
-                    >
-                      <FaUserCog /> Gerenciar Página
-                    </button>
-
-                    <button
-                      onClick={() => {
-                        setFoundUser(null);
-                        setSearchEmail('');
-                        setAdminMessage(null);
-                      }}
-                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-1 px-3 rounded-md text-sm"
-                    >
-                      Limpar Busca
+                      <FaSave /> Salvar Alterações
                     </button>
                   </div>
                 </div>
-              )}
-            </div>
+
+                {/* Aparencia */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8" id="appearance-section">
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">
+                    Aparência & Design
+                  </h3>
+                  <p className="text-gray-500 text-sm mb-6">
+                    Personalize o visual da sua página pública.
+                  </p>
+
+                  <div className="mb-8 p-5 bg-gray-50 rounded-xl border border-gray-200">
+                    <h4 className="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                      <div className="p-1.5 bg-indigo-100 text-indigo-600 rounded">
+                        <FaImage size={14} />
+                      </div>
+                      Fundo Personalizado
+                      {!isProPlan && (
+                        <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full flex items-center gap-1 font-medium">
+                          <FaLock size={10} /> PRO
+                        </span>
+                      )}
+                    </h4>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBackgroundImageUpload}
+                      disabled={!isProPlan || isUploadingBg}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:font-semibold file:bg-white file:text-indigo-600 file:border file:border-indigo-200 hover:file:bg-indigo-50 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    />
+                    {isUploadingBg && (
+                      <p className="text-xs font-semibold text-indigo-600 mt-2 flex items-center gap-1">
+                        <div className="w-3 h-3 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+                        Processando imagem...
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+                    {themes.map((theme) => {
+                      const isActive = (pageData?.theme || 'light') === theme.name;
+                      const isDisabledByPlan = theme.isPro && !isProPlan;
+
+                      return (
+                        <button
+                          key={theme.name}
+                          onClick={() => handleThemeChange(theme.name)}
+                          disabled={isDisabledByPlan}
+                          className={`relative p-3 rounded-xl border-2 text-center transition-all duration-200 focus:outline-none flex flex-col items-center group ${
+                            isActive
+                              ? 'border-blue-600 bg-blue-50/50 shadow-sm'
+                              : isDisabledByPlan
+                                ? 'border-gray-100 opacity-60 cursor-not-allowed bg-gray-50'
+                                : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          <div
+                            className={`h-12 w-full rounded-lg mb-3 border border-gray-200/50 shadow-inner group-hover:shadow-md transition-shadow ${theme.colorClass}`}
+                          ></div>
+                          <span className="text-xs font-bold text-gray-700 flex items-center justify-center gap-1.5 w-full">
+                            {theme.label}
+                            {isDisabledByPlan && (
+                              <FaLock className="text-gray-400" size={10} />
+                            )}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Upsell para usuários Free */}
+                  {!isProPlan && !targetUserId && (
+                    <div className="mt-8 pt-8 border-t border-gray-200 bg-gradient-to-b from-transparent to-blue-50/30 rounded-b-xl -mx-6 -mb-6 p-6">
+                      <div className="text-center max-w-lg mx-auto">
+                        <h4 className="text-xl font-extrabold text-gray-900 mb-2">
+                          Eleve o nível da sua página
+                        </h4>
+                        <p className="text-gray-600 text-sm mb-6">
+                          Desbloqueie fundos personalizados, temas premium, remoção da marca d'água e muito mais com o Meus Links Pro.
+                        </p>
+                        <div className="flex flex-col sm:flex-row justify-center gap-3">
+                          <a
+                            href={generateWhatsAppLink('Mensal', '9,99')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-white text-gray-900 border border-gray-300 hover:bg-gray-50 font-bold py-2.5 px-6 rounded-xl transition-all shadow-sm text-sm"
+                          >
+                            Mensal R$9,99
+                          </a>
+                          <a
+                            href={generateWhatsAppLink('Anual', '90,00')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-md shadow-blue-200 text-sm flex items-center justify-center gap-2"
+                          >
+                            Anual R$90,00
+                            <span className="bg-yellow-400 text-yellow-900 text-[10px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider">
+                              -25%
+                            </span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Adicionar / Gerenciar Links */}
+                <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-5">
+                    Adicionar Novo Link
+                  </h3>
+                  <form onSubmit={handleAddLink} className="space-y-4 bg-gray-50 p-5 rounded-xl border border-gray-100">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="linkTitle" className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">
+                          Título
+                        </label>
+                        <input
+                          required
+                          type="text"
+                          id="linkTitle"
+                          value={newLinkTitle}
+                          onChange={(e) => setNewLinkTitle(e.target.value)}
+                          className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          placeholder="Ex: Meu Portfólio"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="linkUrl" className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">
+                          URL (Link)
+                        </label>
+                        <input
+                          required
+                          type="url"
+                          id="linkUrl"
+                          value={newLinkUrl}
+                          onChange={(e) => setNewLinkUrl(e.target.value)}
+                          className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          placeholder="https://..."
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label htmlFor="linkIcon" className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1.5">
+                        Ícone <span className="text-gray-400 font-normal normal-case tracking-normal">(opcional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="linkIcon"
+                        value={newLinkIcon}
+                        onChange={(e) => setNewLinkIcon(e.target.value)}
+                        className="block w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        placeholder="Ex: github, instagram, linkedin"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full sm:w-auto mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition-all shadow-sm flex items-center justify-center gap-2"
+                    >
+                      Adicionar ao Perfil
+                    </button>
+                  </form>
+                </div>
+
+                {/* Lista de Links Ordenável */}
+                <div className="mt-8">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Meus Links Organizados
+                    </h3>
+                    {pageData?.links && pageData.links.length > 1 && (
+                      <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">
+                        Arraste para reordenar
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="bg-transparent">
+                    {pageData?.links && pageData.links.length > 0 ? (
+                      <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={handleDragEnd}
+                      >
+                        <SortableContext
+                          items={pageData.links.map((l, idx) => l.url + idx)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div className="space-y-3">
+                            {pageData.links.map((link, index) => {
+                              if (editingIndex === index) {
+                                return (
+                                  <div
+                                    key={link.url + index}
+                                    className="p-5 bg-white border-2 border-blue-400 rounded-xl shadow-md mb-3 transition-all"
+                                  >
+                                    <div className="space-y-4">
+                                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                          <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">
+                                            Título
+                                          </label>
+                                          <input
+                                            type="text"
+                                            value={editingTitle}
+                                            onChange={(e) => setEditingTitle(e.target.value)}
+                                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">
+                                            URL
+                                          </label>
+                                          <input
+                                            type="url"
+                                            value={editingUrl}
+                                            onChange={(e) => setEditingUrl(e.target.value)}
+                                            className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500"
+                                          />
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <label className="block text-xs font-bold text-gray-600 uppercase tracking-wide mb-1">
+                                          Ícone
+                                        </label>
+                                        <input
+                                          type="text"
+                                          value={editingIcon}
+                                          onChange={(e) => setEditingIcon(e.target.value)}
+                                          className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Ex: whatsapp"
+                                        />
+                                      </div>
+                                      <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
+                                        <button
+                                          onClick={handleCancelEdit}
+                                          className="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 font-bold py-2 px-4 rounded-lg text-sm transition-colors"
+                                        >
+                                          Cancelar
+                                        </button>
+                                        <button
+                                          onClick={() => handleUpdateLink(index)}
+                                          className="bg-blue-600 text-white hover:bg-blue-700 font-bold py-2 px-4 rounded-lg text-sm transition-colors shadow-sm"
+                                        >
+                                          Salvar Alterações
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              return (
+                                <SortableLinkItem
+                                  key={link.url + index}
+                                  link={link}
+                                  index={index}
+                                  onEdit={() => handleEditClick(link, index)}
+                                  onDelete={() => handleDeleteLink(link)}
+                                  editingIndex={editingIndex}
+                                />
+                              );
+                            })}
+                          </div>
+                        </SortableContext>
+                      </DndContext>
+                    ) : (
+                      <div className="text-center py-12 bg-white border border-dashed border-gray-300 rounded-xl">
+                        <FaLink className="mx-auto text-gray-300 text-4xl mb-3" />
+                        <p className="text-gray-500 font-medium">
+                          Nenhum link adicionado ainda.
+                        </p>
+                        <p className="text-sm text-gray-400 mt-1">
+                          Use o formulário acima para criar seu primeiro link.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </main>
