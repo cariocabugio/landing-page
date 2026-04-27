@@ -19,6 +19,9 @@ import {
   FaMagic,
 } from 'react-icons/fa';
 
+// Importação do nosso novo componente de IA
+import AssistantChat from '@/components/AssistantChat';
+
 // Componente de Cabeçalho (Header)
 const Header = () => (
   <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
@@ -168,7 +171,7 @@ const HeroSection = () => {
   );
 };
 
-// Seção de Funcionalidades (ATUALIZADA)
+// Seção de Funcionalidades
 const FeaturesSection = () => {
   const features = [
     {
@@ -230,7 +233,7 @@ const FeaturesSection = () => {
   );
 };
 
-// NOVA SEÇÃO: TUTORIAL PASSO A PASSO
+// Seção Tutorial
 const TutorialSection = () => {
   const steps = [
     {
@@ -264,7 +267,6 @@ const TutorialSection = () => {
         </div>
 
         <div className="flex flex-col md:flex-row justify-center items-start gap-8 md:gap-12 relative">
-          {/* Linha conectora (visível apenas desktop) */}
           <div className="hidden md:block absolute top-8 left-20 right-20 h-1 bg-blue-200 -z-10"></div>
 
           {steps.map((step) => (
@@ -296,6 +298,33 @@ const TutorialSection = () => {
   );
 };
 
+// NOVA SEÇÃO: Integração do Assistente de IA
+const AIAssistantSection = () => (
+  <section className="py-20 bg-gradient-to-b from-white to-gray-50 border-b border-gray-200">
+    <div className="container mx-auto px-4">
+      <div className="text-center mb-10">
+        <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-bold mb-4">
+          <span className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+          </span>
+          NOVO: Agente IA Integrado
+        </div>
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
+          Tire suas dúvidas em tempo real
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto">
+          Ainda não tem certeza de como o Meus Links Pro pode ajudar o seu negócio? Teste nosso assistente virtual agora mesmo e pergunte o que quiser!
+        </p>
+      </div>
+      
+      {/* Aqui estamos renderizando o componente que criamos */}
+      <AssistantChat />
+      
+    </div>
+  </section>
+);
+
 // Seção de Vídeo (LOCAL)
 const VideoSection = () => {
   return (
@@ -311,7 +340,7 @@ const VideoSection = () => {
             className="w-full h-full object-cover"
             controls
             preload="metadata"
-            poster="/poster-video.jpg" // Opcional: Adicione uma imagem chamada poster-video.jpg na pasta public
+            poster="/poster-video.jpg"
           >
             <source src="video.mp4" type="video/mp4" />
             Seu navegador não suporta a tag de vídeo.
@@ -383,7 +412,11 @@ export default function LandingPage() {
       <main>
         <HeroSection />
         <FeaturesSection />
-        <TutorialSection /> {/* Nova Seção Adicionada */}
+        <TutorialSection />
+        
+        {/* Nova Seção Renderizada Aqui! */}
+        <AIAssistantSection /> 
+        
         <VideoSection />
         <CTASection />
       </main>
