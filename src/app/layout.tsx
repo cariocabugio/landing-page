@@ -1,24 +1,13 @@
 // src/app/layout.tsx
 
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
 export const metadata: Metadata = {
-  title: 'Meus Links Pro - Seus links em um só lugar',
+  title: 'Voo Singular Leads - Captação para agentes de viagem',
   description:
-    'Crie sua página de links personalizada e compartilhe com o mundo.',
+    'Plataforma de presença digital e captação de leads para agentes de viagem.',
   manifest: '/manifest.json',
   icons: {
     icon: '/favicon.ico',
@@ -26,7 +15,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'Meus Links Pro',
+    title: 'Voo Singular',
   },
 };
 
@@ -42,9 +31,7 @@ export default function RootLayout({
   return (
     // Alterado para Português do Brasil
     <html lang="pt-BR">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="font-sans antialiased">
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

@@ -1,7 +1,7 @@
 {
-  "name": "Meus Links Pro",
-  "short_name": "LinksPro",
-  "description": "Gerenciador de Links e Serviços",
+  "name": "Voo Singular Leads",
+  "short_name": "Voo Leads",
+  "description": "Plataforma de presença digital e captação de leads para agentes de viagem.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

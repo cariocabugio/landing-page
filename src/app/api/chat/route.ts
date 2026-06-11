@@ -8,22 +8,26 @@ export async function POST(req: Request) {
     const { message } = await req.json();
 
     // Inicializando o modelo com Instruções de Sistema (Contexto)
-    const model = genAI.getGenerativeModel({ 
+    const model = genAI.getGenerativeModel({
       model: 'gemini-2.5-flash',
-      systemInstruction: `Você é o assistente virtual oficial do 'Meus-Links-Pro', uma plataforma robusta e profissional para gestão e compartilhamento de links. 
-      Seu tom deve ser amigável, focado em negócios, direto e prestativo.
+      systemInstruction: `Você é o assistente virtual oficial da Voo Singular Leads, uma plataforma de landing pages e métricas para agentes de viagem. Seu papel é ajudar o usuário a melhorar captação, presença digital, CTAs para WhatsApp e análise de conversão.
       
-      Aqui estão as funcionalidades exclusivas da plataforma que você deve explicar quando perguntado sobre 'como funciona', 'o que é' ou 'ferramentas':
-      1. Botão Salvar Contato (vCard): O cliente clica e salva nome, telefone e email direto na agenda do celular.
-      2. QR Code Automático: Para baixar, imprimir e colar no balcão da loja.
-      3. Gráficos de Acesso: Analytics em tempo real para medir os cliques.
-      4. App Instalável (PWA): Os clientes podem instalar a página de links como um app nativo.
-      5. 6 Temas Exclusivos: Para o usuário personalizar com a cara da própria marca.
+      A aplicação é topo do funil comercial: cria presença digital, páginas de captação, CTAs para WhatsApp e métricas de comportamento dos visitantes. Ela não é um CRM completo.
+      
+      O que a Voo Singular Leads ajuda a fazer:
+      1. Criar páginas públicas e landing pages para destinos, ofertas e campanhas de turismo.
+      2. Direcionar visitantes qualificados para o WhatsApp.
+      3. Melhorar textos, chamadas e CTAs de páginas de captação.
+      4. Acompanhar cliques e métricas de conversão.
+      5. Apoiar ideias de campanhas para agentes de viagem.
+      6. Usar QR Code, vCard e canais de contato como apoio à presença digital.
       
       Regras:
       - Seja conciso e evite textos gigantescos.
-      - Nunca invente funcionalidades que não estão nesta lista.
-      - Se o usuário fizer uma saudação simples, convide-o a criar uma conta gratuita em 3 passos simples (Criar Conta, Personalizar e Compartilhar).`
+      - Nunca prometa CRM completo, cotação, propostas, histórico comercial ou gestão de clientes dentro desta aplicação.
+      - Explique que cotação, histórico comercial e gestão de negociação ficam em um sistema externo.
+      - Se o usuário pedir ajuda comercial, foque em landing pages, captação, WhatsApp, campanha e métricas.
+      - Se o usuário fizer uma saudação simples, convide-o a criar uma página de captação e direcionar interessados para o WhatsApp.`
     });
 
     const result = await model.generateContent(message);
@@ -31,11 +35,11 @@ export async function POST(req: Request) {
     const text = response.text();
 
     return NextResponse.json({ reply: text });
-    
+
   } catch (error) {
     console.error('Erro de comunicação com o Gemini:', error);
     return NextResponse.json(
-      { error: 'Não foi possível processar sua mensagem no momento.' }, 
+      { error: 'Não foi possível processar sua mensagem no momento.' },
       { status: 500 }
     );
   }

@@ -1,426 +1,213 @@
-// src/app/page.tsx
-'use client';
-
-import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import {
-  FaCheckCircle,
-  FaRocket,
-  FaMobileAlt,
-  FaPalette,
-  FaChartLine,
-  FaPlay,
-  FaInstagram,
-  FaWhatsapp,
-  FaLinkedin,
-  FaQrcode,
-  FaAddressCard,
-  FaMagic,
-} from 'react-icons/fa';
 
-// Importação do nosso novo componente de IA
-import AssistantChat from '@/components/AssistantChat';
+const flowSteps = [
+  {
+    title: 'Landing page',
+    text: 'Campanhas e páginas objetivas para apresentar destinos, ofertas e experiências de viagem.',
+  },
+  {
+    title: 'WhatsApp',
+    text: 'CTAs diretos levam visitantes interessados para uma conversa humana com a equipe da agência.',
+  },
+  {
+    title: 'Métricas',
+    text: 'A evolução natural é medir visitas, cliques e conversões por campanha.',
+  },
+  {
+    title: 'CRM externo',
+    text: 'Cotação, proposta, negociação e histórico comercial seguem no sistema próprio da agência.',
+  },
+];
 
-// Componente de Cabeçalho (Header)
-const Header = () => (
-  <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-    <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-          M
-        </div>
-        <span className="text-xl font-bold text-gray-900 tracking-tight">
-          Meus Links Pro
-        </span>
-      </div>
-      <div className="flex items-center gap-4">
-        <Link
-          href="/admin/login"
-          className="text-gray-600 hover:text-blue-600 font-medium transition-colors hidden sm:block"
-        >
-          Entrar
-        </Link>
-        <Link
-          href="/admin/login"
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-bold transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transform hover:-translate-y-0.5"
-        >
-          Criar Grátis
-        </Link>
-      </div>
-    </div>
-  </header>
-);
+const cards = [
+  {
+    title: 'Landing pages de campanha',
+    text: 'Páginas focadas em destinos, eventos, pacotes e ofertas sazonais da Voo Singular.',
+  },
+  {
+    title: 'CTA para WhatsApp',
+    text: 'O visitante encontra uma chamada clara para iniciar atendimento sem passar por fluxos complexos.',
+  },
+  {
+    title: 'Métricas de conversão',
+    text: 'Base preparada para evoluir com rastreamento de visitas, cliques e origem das campanhas.',
+  },
+];
 
-// Componente Hero (Apresentação Principal)
-const HeroSection = () => {
+export default function Home() {
   return (
-    <section className="pt-32 pb-20 overflow-hidden bg-gradient-to-b from-gray-50 to-white">
-      <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-          {/* Texto Hero */}
-          <div className="lg:w-1/2 text-center lg:text-left z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+    <main className="min-h-screen bg-white text-slate-950">
+      <header className="border-b border-sky-100 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5">
+          <Link href="/" className="min-w-0">
+            <span className="block text-lg font-black tracking-tight text-blue-800">
+              Voo Singular Leads
+            </span>
+            <span className="hidden text-xs font-semibold text-slate-500 sm:block">
+              Landing pages, WhatsApp e métricas para campanhas de viagem.
+            </span>
+          </Link>
+
+          <nav className="flex shrink-0 items-center gap-2">
+            <Link
+              href="/lp/voo-singular"
+              className="hidden rounded-full border border-blue-200 px-4 py-2 text-sm font-extrabold text-blue-800 transition hover:border-blue-300 hover:bg-sky-50 sm:inline-flex"
             >
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold mb-6">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-                Agora com QR Code e vCard!
-              </div>
-              <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-[1.15] mb-6">
-                Transforme um link em{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                  clientes reais.
-                </span>
-              </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
-                A ferramenta definitiva para profissionais. Crie uma página bio,
-                gere QR Codes para sua loja e deixe clientes salvarem seu
-                contato com 1 clique.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link
-                  href="/admin/login"
-                  className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-lg px-8 py-4 rounded-xl font-bold transition-all shadow-xl shadow-blue-600/20 hover:shadow-blue-600/40"
-                >
-                  <FaRocket /> Criar Meu Perfil
-                </Link>
-                <Link
-                  href="#tutorial"
-                  className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-800 text-lg px-8 py-4 rounded-xl font-bold border border-gray-200 transition-all hover:border-gray-300"
-                >
-                  <FaMagic className="text-purple-500" /> Como Funciona?
-                </Link>
-              </div>
-
-              <div className="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm text-gray-500">
-                <p className="flex items-center gap-1">
-                  <FaCheckCircle className="text-green-500" /> App Instalável
-                  (PWA)
-                </p>
-                <p className="flex items-center gap-1">
-                  <FaCheckCircle className="text-green-500" /> Gráficos em Tempo
-                  Real
-                </p>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* Mockup do Celular (Visual) */}
-          <div className="lg:w-1/2 relative">
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="relative mx-auto lg:ml-auto w-[300px] h-[600px] bg-gray-900 rounded-[3rem] border-[8px] border-gray-800 shadow-2xl overflow-hidden ring-1 ring-gray-900/5"
+              Ver landing
+            </Link>
+            <Link
+              href="/admin/login"
+              className="rounded-full bg-blue-700 px-4 py-2 text-sm font-extrabold text-white shadow-lg shadow-blue-900/15 transition hover:-translate-y-0.5 hover:bg-blue-800"
             >
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-gray-800 rounded-b-xl z-20"></div>
-
-              <div className="w-full h-full bg-gradient-to-br from-blue-600 to-indigo-800 overflow-y-auto custom-scrollbar relative">
-                <div className="pt-16 pb-8 px-6 flex flex-col items-center text-center text-white">
-                  <div className="w-24 h-24 rounded-full border-4 border-white/20 shadow-lg bg-white/10 mb-4 overflow-hidden relative">
-                    <div className="w-full h-full bg-gray-300 flex items-center justify-center text-3xl font-bold">
-                      CS
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-bold mb-1">Carioca Tech</h3>
-                  <p className="text-white/80 text-sm mb-6">
-                    Soluções Digitais & Software
-                  </p>
-
-                  <div className="w-full space-y-3">
-                    <div className="w-full bg-white text-blue-900 p-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg transform scale-105">
-                      <FaWhatsapp size={20} /> Orçamento no Zap
-                    </div>
-                    {['Meu Portfólio', 'Agendar Consultoria'].map((item, i) => (
-                      <div
-                        key={i}
-                        className="w-full bg-white/10 backdrop-blur-md p-4 rounded-xl font-medium border border-white/10 flex items-center justify-between"
-                      >
-                        <span>{item}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-8 flex gap-4 text-2xl opacity-80">
-                    <FaInstagram /> <FaLinkedin />
-                  </div>
-
-                  <div className="mt-8 bg-white/10 p-3 rounded-lg border border-white/10 w-full">
-                    <p className="text-xs uppercase tracking-widest mb-2 opacity-70">
-                      Salvar Contato
-                    </p>
-                    <button className="bg-white text-blue-900 w-full py-2 rounded font-bold text-sm flex items-center justify-center gap-2">
-                      <FaAddressCard /> Adicionar à Agenda
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[80%] bg-blue-500/20 blur-[100px] -z-10 rounded-full"></div>
-          </div>
+              Acessar painel
+            </Link>
+          </nav>
         </div>
-      </div>
-    </section>
-  );
-};
+      </header>
 
-// Seção de Funcionalidades
-const FeaturesSection = () => {
-  const features = [
-    {
-      icon: <FaAddressCard className="text-blue-500" />,
-      title: 'Botão Salvar Contato',
-      desc: 'Seu cliente clica e salva seu nome, telefone e email direto na agenda do celular dele. Chega de perder contatos!',
-    },
-    {
-      icon: <FaQrcode className="text-gray-800" />,
-      title: 'QR Code Automático',
-      desc: 'Baixe o QR Code do seu perfil, imprima e cole no balcão da sua loja ou cartão de visita. Conecte o mundo físico ao digital.',
-    },
-    {
-      icon: <FaChartLine className="text-green-500" />,
-      title: 'Gráficos de Acesso',
-      desc: 'Não chute, meça. Veja gráficos visuais de quantos cliques você teve e saiba o que seus clientes mais buscam.',
-    },
-    {
-      icon: <FaMobileAlt className="text-purple-500" />,
-      title: 'Instalável como App',
-      desc: 'Tecnologia PWA: você e seus clientes podem instalar sua página como um aplicativo nativo no celular.',
-    },
-  ];
-
-  return (
-    <section className="py-20 bg-white">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Ferramentas de Nível Pro
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Muito mais que apenas links. Um ecossistema completo para o seu
-            negócio crescer.
-          </p>
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ y: -5 }}
-              className="p-6 rounded-2xl bg-gray-50 border border-gray-100 hover:border-blue-200 hover:shadow-lg transition-all"
-            >
-              <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center text-3xl mb-4 border border-gray-100">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                {feature.desc}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Seção Tutorial
-const TutorialSection = () => {
-  const steps = [
-    {
-      num: 1,
-      title: 'Crie sua Conta',
-      desc: 'Entre com o Google em segundos. Sem formulários longos.',
-    },
-    {
-      num: 2,
-      title: 'Personalize',
-      desc: 'Escolha um tema, coloque sua foto e adicione seus links (Zap, Insta, etc).',
-    },
-    {
-      num: 3,
-      title: 'Compartilhe',
-      desc: 'Copie seu link curto ou baixe o QR Code e espalhe por aí!',
-    },
-  ];
-
-  return (
-    <section
-      id="tutorial"
-      className="py-20 bg-blue-50 border-y border-blue-100"
-    >
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Comece em 3 Passos Simples
-          </h2>
-          <p className="text-gray-600">Não precisa ser expert em tecnologia.</p>
-        </div>
-
-        <div className="flex flex-col md:flex-row justify-center items-start gap-8 md:gap-12 relative">
-          <div className="hidden md:block absolute top-8 left-20 right-20 h-1 bg-blue-200 -z-10"></div>
-
-          {steps.map((step) => (
-            <div
-              key={step.num}
-              className="flex-1 flex flex-col items-center text-center bg-white/50 backdrop-blur p-6 rounded-2xl border border-white/50 shadow-sm md:bg-transparent md:border-0 md:shadow-none"
-            >
-              <div className="w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-2xl font-bold shadow-lg mb-6 border-4 border-white">
-                {step.num}
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                {step.title}
-              </h3>
-              <p className="text-gray-600">{step.desc}</p>
+      <section className="bg-[linear-gradient(135deg,#eff8ff_0%,#ffffff_50%,#dff4ff_100%)] px-5 py-16 sm:py-20">
+        <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
+          <div>
+            <p className="inline-flex rounded-full border border-blue-200 bg-white px-4 py-2 text-xs font-black uppercase text-blue-800 shadow-sm">
+              Plataforma de captação da Voo Singular
+            </p>
+            <h1 className="mt-6 max-w-4xl text-4xl font-black leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+              Transforme campanhas de viagem em contatos pelo WhatsApp.
+            </h1>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+              A Voo Singular Leads organiza landing pages de captação,
+              campanhas de viagem e, futuramente, métricas para entender quais
+              visitantes avançam para atendimento.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/lp/voo-singular"
+                className="inline-flex items-center justify-center rounded-full bg-blue-700 px-7 py-4 text-base font-extrabold text-white shadow-xl shadow-blue-900/20 transition hover:-translate-y-0.5 hover:bg-blue-800"
+              >
+                Ver landing principal
+              </Link>
+              <Link
+                href="/admin/login"
+                className="inline-flex items-center justify-center rounded-full border border-blue-200 bg-white px-7 py-4 text-base font-extrabold text-blue-800 transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-sky-50"
+              >
+                Acessar painel
+              </Link>
             </div>
-          ))}
-        </div>
+          </div>
 
-        <div className="text-center mt-12">
+          <div className="rounded-lg border border-blue-100 bg-white p-5 shadow-2xl shadow-blue-950/10">
+            <p className="text-sm font-black uppercase text-blue-700">
+              Rota principal atual
+            </p>
+            <div className="mt-4 rounded-lg bg-blue-700 p-5 text-white">
+              <p className="text-2xl font-black">/lp/voo-singular</p>
+              <p className="mt-3 leading-7 text-sky-50">
+                Página de campanha ativa para apresentar a Voo Singular e levar
+                visitantes ao atendimento comercial pelo WhatsApp.
+              </p>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {['Captação', 'Campanhas', 'WhatsApp', 'Métricas futuras'].map(
+                (item) => (
+                  <div
+                    key={item}
+                    className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700"
+                  >
+                    {item}
+                  </div>
+                )
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-5 py-14">
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-3xl">
+            <p className="text-sm font-black uppercase text-blue-700">
+              Como a aplicação atua
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+              Um fluxo simples entre campanha, atendimento e leitura de
+              conversão.
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-4">
+            {flowSteps.map((step, index) => (
+              <article
+                key={step.title}
+                className="rounded-lg border border-slate-200 bg-slate-50 p-5"
+              >
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-700 text-sm font-black text-white">
+                  {index + 1}
+                </span>
+                <h3 className="mt-5 text-lg font-black text-slate-950">
+                  {step.title}
+                </h3>
+                <p className="mt-3 leading-7 text-slate-600">{step.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-sky-50 px-5 py-14">
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-3xl">
+            <p className="text-sm font-black uppercase text-blue-700">
+              Foco do produto
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+              Menos sistema genérico, mais captação para viagens.
+            </h2>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-3">
+            {cards.map((card) => (
+              <article
+                key={card.title}
+                className="rounded-lg border border-blue-100 bg-white p-6 shadow-sm"
+              >
+                <h3 className="text-xl font-black text-blue-950">
+                  {card.title}
+                </h3>
+                <p className="mt-3 leading-7 text-slate-600">{card.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-blue-800 px-5 py-14 text-white">
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-sm font-black uppercase text-sky-100">
+              Escopo claro
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+              Esta aplicação não substitui o CRM da agência.
+            </h2>
+            <p className="mt-4 leading-8 text-sky-50">
+              Ela atua na captação e análise de conversão. Cotação,
+              acompanhamento comercial, clientes, propostas e negociação ficam
+              no sistema externo da Voo Singular.
+            </p>
+          </div>
           <Link
-            href="/admin/login"
-            className="text-blue-600 font-bold hover:underline"
+            href="/lp/voo-singular"
+            className="inline-flex shrink-0 items-center justify-center rounded-full bg-white px-7 py-4 text-base font-extrabold text-blue-900 shadow-xl shadow-blue-950/20 transition hover:-translate-y-0.5 hover:bg-sky-50"
           >
-            Ver tutorial completo em vídeo &rarr;
+            Ver landing principal
           </Link>
         </div>
-      </div>
-    </section>
-  );
-};
+      </section>
 
-// NOVA SEÇÃO: Integração do Assistente de IA
-const AIAssistantSection = () => (
-  <section className="py-20 bg-gradient-to-b from-white to-gray-50 border-b border-gray-200">
-    <div className="container mx-auto px-4">
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-blue-100 text-blue-800 text-sm font-bold mb-4">
-          <span className="relative flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-          </span>
-          NOVO: Agente IA Integrado
+      <footer className="border-t border-slate-200 bg-white px-5 py-8">
+        <div className="mx-auto flex max-w-6xl flex-col gap-3 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-black text-blue-800">Voo Singular Leads</p>
+          <p>Landing pages, WhatsApp e métricas para campanhas de viagem.</p>
         </div>
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
-          Tire suas dúvidas em tempo real
-        </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto">
-          Ainda não tem certeza de como o Meus Links Pro pode ajudar o seu negócio? Teste nosso assistente virtual agora mesmo e pergunte o que quiser!
-        </p>
-      </div>
-      
-      {/* Aqui estamos renderizando o componente que criamos */}
-      <AssistantChat />
-      
-    </div>
-  </section>
-);
-
-// Seção de Vídeo (LOCAL)
-const VideoSection = () => {
-  return (
-    <section className="py-20 bg-gray-900 text-white overflow-hidden relative">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-      <div className="container mx-auto px-4 relative z-10 text-center">
-        <h2 className="text-3xl md:text-4xl font-bold mb-8">
-          Veja a plataforma por dentro
-        </h2>
-
-        <div className="max-w-4xl mx-auto aspect-video bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border border-gray-700 relative group">
-          <video
-            className="w-full h-full object-cover"
-            controls
-            preload="metadata"
-            poster="/poster-video.jpg"
-          >
-            <source src="video.mp4" type="video/mp4" />
-            Seu navegador não suporta a tag de vídeo.
-          </video>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-// Seção CTA Final
-const CTASection = () => (
-  <section className="py-24 bg-blue-600 text-white relative overflow-hidden">
-    <div className="absolute top-0 left-0 w-full h-full bg-[url('/public/window.svg')] opacity-10"></div>
-    <div className="container mx-auto px-4 text-center relative z-10">
-      <h2 className="text-3xl md:text-5xl font-bold mb-6">
-        Pronto para organizar sua vida digital?
-      </h2>
-      <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">
-        Junte-se a milhares de profissionais que usam o Meus Links Pro.
-      </p>
-      <Link
-        href="/admin/login"
-        className="inline-block bg-white text-blue-600 text-lg font-bold px-10 py-4 rounded-full shadow-2xl hover:bg-gray-100 transform hover:scale-105 transition-all"
-      >
-        Criar Minha Página Grátis
-      </Link>
-      <p className="mt-6 text-sm text-blue-200 opacity-80">
-        <FaCheckCircle className="inline mr-1" /> Plano Gratuito disponível para
-        sempre
-      </p>
-    </div>
-  </section>
-);
-
-// Footer
-const Footer = () => (
-  <footer className="bg-gray-50 py-12 border-t border-gray-200">
-    <div className="container mx-auto px-4 text-center text-gray-500">
-      <div className="flex items-center justify-center gap-2 mb-4 font-bold text-gray-800 text-xl">
-        Meus Links Pro
-      </div>
-      <p className="mb-8 text-sm">
-        Feito por Carioca Tech. Tecnologia de ponta para o seu negócio.
-      </p>
-      <div className="flex justify-center gap-6 mb-8">
-        <a href="#" className="hover:text-blue-600 transition">
-          <FaInstagram size={24} />
-        </a>
-        <a href="#" className="hover:text-blue-600 transition">
-          <FaWhatsapp size={24} />
-        </a>
-        <a href="#" className="hover:text-blue-600 transition">
-          <FaLinkedin size={24} />
-        </a>
-      </div>
-      <p className="text-xs">
-        &copy; {new Date().getFullYear()} Meus Links Pro. Todos os direitos
-        reservados.
-      </p>
-    </div>
-  </footer>
-);
-
-export default function LandingPage() {
-  return (
-    <div className="font-sans text-gray-900 bg-white min-h-screen selection:bg-blue-100 selection:text-blue-900">
-      <Header />
-      <main>
-        <HeroSection />
-        <FeaturesSection />
-        <TutorialSection />
-        
-        {/* Nova Seção Renderizada Aqui! */}
-        <AIAssistantSection /> 
-        
-        <VideoSection />
-        <CTASection />
-      </main>
-      <Footer />
-    </div>
+      </footer>
+    </main>
   );
 }

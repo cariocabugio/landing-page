@@ -4,7 +4,7 @@ import { getPageDataBySlug, PageData } from '@/lib/pageService';
 
 export const runtime = 'edge';
 
-export const alt = 'Meus Links Pro - Perfil';
+export const alt = 'Voo Singular Leads - Landing page de viagem';
 export const size = {
   width: 1200,
   height: 630,
@@ -16,8 +16,10 @@ export default async function Image({ params }: { params: { slug: string } }) {
   const { slug } = await params;
   const pageData = (await getPageDataBySlug(slug)) as (PageData & { backgroundImage?: string }) | null;
 
-  const title = pageData?.title || 'Meus Links Pro';
-  const bio = pageData?.bio || 'Confira meus links e redes sociais!';
+  const title = pageData?.title || 'Voo Singular Leads';
+  const bio =
+    pageData?.bio ||
+    'Landing pages, WhatsApp e métricas para campanhas de viagem.';
   const profileImage = pageData?.profileImageUrl;
   const isPro = [
     'realtor', 'restaurant', 'mechanic', 'influencer', 
@@ -34,8 +36,9 @@ export default async function Image({ params }: { params: { slug: string } }) {
           alignItems: 'center',
           justifyContent: 'center',
           flexDirection: 'column',
-          backgroundColor: '#0f172a', // Slate 900 para um fundo Deep Tech
-          backgroundImage: 'radial-gradient(circle at 50% 50%, #1e40af 0%, #0f172a 100%)',
+          backgroundColor: '#0f3f91',
+          backgroundImage:
+            'radial-gradient(circle at 50% 50%, #53d2e9 0%, #126fbf 42%, #0f3f91 100%)',
           color: 'white',
           fontFamily: 'sans-serif',
           textAlign: 'center',
@@ -123,10 +126,21 @@ export default async function Image({ params }: { params: { slug: string } }) {
           {bio.length > 120 ? bio.substring(0, 120) + '...' : bio}
         </div>
 
+        <div
+          style={{
+            marginTop: '34px',
+            fontSize: 28,
+            color: '#e0f2fe',
+            fontWeight: 700,
+          }}
+        >
+          Transforme visitantes em contatos pelo WhatsApp
+        </div>
+
         {/* Footer/CTA Estilizado */}
         <div
           style={{
-            marginTop: '60px',
+            marginTop: '40px',
             background: 'rgba(255,255,255,0.08)',
             border: '1px solid rgba(255,255,255,0.15)',
             padding: '12px 40px',
@@ -139,7 +153,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
             color: '#60a5fa'
           }}
         >
-          <span style={{ color: 'white', opacity: 0.6 }}>meuslinkspro.com/</span>
+          <span style={{ color: 'white', opacity: 0.75 }}>Voo Singular Leads</span>
           {slug}
         </div>
       </div>

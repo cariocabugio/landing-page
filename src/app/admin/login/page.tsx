@@ -29,20 +29,22 @@ export default function LoginPage() {
         <div className="absolute bottom-10 right-10 w-64 h-64 bg-purple-500 opacity-20 rounded-full blur-3xl"></div>
 
         <div className="relative z-10">
-          <h2 className="text-4xl font-bold mb-6">Bem-vindo de volta!</h2>
+          <h2 className="text-4xl font-bold mb-6">
+            Bem-vindo à Voo Singular
+          </h2>
           <p className="text-blue-100 text-lg mb-8 leading-relaxed">
-            Gerencie seus links, analise suas métricas e personalize sua página
-            para atrair mais clientes.
+            Gerencie sua presença digital, acompanhe seus contatos e prepare sua
+            operação para captar mais clientes de viagem.
           </p>
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl border border-white/20">
             {/* CORREÇÃO AQUI: Trocamos as aspas duplas por &quot; */}
             <p className="italic">
-              &quot;Desde que comecei a usar o Meus Links Pro, meus cliques no
-              WhatsApp aumentaram 150%.&quot;
+              &quot;Agora tenho uma página profissional para apresentar meus
+              roteiros e levar clientes direto para o WhatsApp.&quot;
             </p>
             <div className="mt-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/30"></div>
-              <span className="font-semibold text-sm">Usuário Satisfeito</span>
+              <span className="font-semibold text-sm">Agente de viagem</span>
             </div>
           </div>
         </div>

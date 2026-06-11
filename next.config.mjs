@@ -1,4 +1,7 @@
+import path from "node:path";
 import withPWAInit from "@ducanh2912/next-pwa";
+
+const projectRoot = path.resolve();
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -16,6 +19,9 @@ const withPWA = withPWAInit({
 const nextConfig = {
   // AQUI ESTÁ O TRUQUE: Gera uma build focada e menor
   output: "standalone", 
+  turbopack: {
+    root: projectRoot,
+  },
   
   images: {
     remotePatterns: [

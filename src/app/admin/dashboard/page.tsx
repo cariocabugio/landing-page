@@ -290,7 +290,7 @@ export default function DashboardPage() {
     }
   }, [user, targetUserId]);
 
-  // Carrega todos os usuários (apenas quando o admin estiver visualizando a aba Gestão SaaS)
+  // Carrega todos os usuários apenas na aba administrativa.
   const fetchAllUsers = useCallback(async () => {
     if (!isAdmin || targetUserId) return;
     setIsLoadingAllUsers(true);
@@ -700,10 +700,10 @@ export default function DashboardPage() {
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center font-bold text-xl">
-                L
+                V
               </div>
               <h1 className="text-xl font-bold text-gray-900 hidden sm:block">
-                Meus Links <span className="text-blue-600">Pro</span>
+                Voo Singular <span className="text-blue-600">Leads</span>
               </h1>
             </div>
             <div className="flex items-center gap-4">
@@ -744,7 +744,7 @@ export default function DashboardPage() {
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                Gestão SaaS <FaLock className="text-xs opacity-70" />
+                Gestão de Campanhas <FaLock className="text-xs opacity-70" />
               </button>
             </div>
           </div>
@@ -753,16 +753,17 @@ export default function DashboardPage() {
 
       <main className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         {/* ========================================= */}
-        {/* RENDERIZAÇÃO DA ABA: GESTÃO SAAS (ADMIN)  */}
+        {/* RENDERIZAÇÃO DA ABA: GESTÃO DE CAMPANHAS (ADMIN) */}
         {/* ========================================= */}
         {activeTab === 'admin' && isAdmin && !targetUserId ? (
           <div className="animate-in fade-in duration-300">
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Painel de Controle SaaS
+                Painel de Presença e Métricas
               </h2>
               <p className="text-gray-600">
-                Visão geral e gerenciamento da base de clientes da plataforma.
+                Visão geral de usuários, planos e páginas de captação da
+                plataforma.
               </p>
             </div>
 
@@ -965,7 +966,7 @@ export default function DashboardPage() {
                   </div>
                 )}
 
-                {/* Cartão de Cliente (CRM Flow) */}
+                {/* Cartão de usuário para ações administrativas */}
                 {foundUser && (
                   <div className="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden animate-in slide-in-from-bottom-2 duration-300">
                     <div className="p-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -1329,7 +1330,9 @@ export default function DashboardPage() {
                           Eleve o nível da sua página
                         </h4>
                         <p className="text-gray-600 text-sm mb-6">
-                          Desbloqueie fundos personalizados, temas premium, remoção da marca d'água e muito mais com o Meus Links Pro.
+                          Desbloqueie fundos personalizados, temas premium,
+                          remoção da marca d'água e mais recursos do Voo
+                          Singular Leads.
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-3">
                           <a
@@ -1419,7 +1422,7 @@ export default function DashboardPage() {
                 <div className="mt-8">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-bold text-gray-900">
-                      Meus Links Organizados
+                      Canais de Contato Organizados
                     </h3>
                     {pageData?.links && pageData.links.length > 1 && (
                       <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full">

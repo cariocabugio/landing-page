@@ -47,13 +47,13 @@ export default function AssistantChat() {
   return (
     <div className="flex flex-col w-full max-w-md mx-auto bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mt-6">
       <div className="bg-blue-600 p-4 text-white font-bold text-center">
-        🤖 Assistente Meus-Links-Pro
+        Assistente Voo Singular Leads
       </div>
       
       <div className="flex-col p-4 h-64 overflow-y-auto bg-gray-50 flex gap-3">
         {messages.length === 0 && (
           <p className="text-gray-400 text-sm text-center my-auto">
-            Envie uma mensagem para começar...
+            Pergunte sobre landing pages, métricas e WhatsApp...
           </p>
         )}
         
@@ -83,7 +83,7 @@ export default function AssistantChat() {
         <input
           type="text"
           className="flex-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500 transition-colors text-sm"
-          placeholder="Pergunte algo ao assistente..."
+          placeholder="Pergunte sobre captação de viagens..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
