@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import WhatsappTrackingLink from '@/components/WhatsappTrackingLink';
 
 const whatsappUrl =
   'https://wa.me/5579996337995?text=Ol%C3%A1%2C%20Rodrigo%21%20Vi%20a%20landing%20page%20da%20Voo%20Singular%20e%20quero%20planejar%20minha%20pr%C3%B3xima%20viagem.';
@@ -8,6 +9,11 @@ const institutionalWhatsappUrl =
   'https://wa.me/5579988255599?text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es.';
 
 const instagramUrl = 'https://www.instagram.com/voosingularviagens/';
+
+const analyticsPage = {
+  pageId: 'voo-singular',
+  pagePath: '/lp/voo-singular',
+};
 
 const brand = {
   name: 'Voo Singular',
@@ -183,14 +189,18 @@ export default function VooSingularLandingPage() {
               </span>
             </span>
           </Link>
-          <a
+          <WhatsappTrackingLink
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex shrink-0 items-center justify-center rounded-full bg-blue-700 px-4 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-blue-900/15 transition hover:-translate-y-0.5 hover:bg-blue-800"
+            ctaId="header-whatsapp"
+            ctaLabel="Falar no WhatsApp"
+            pageId={analyticsPage.pageId}
+            pagePath={analyticsPage.pagePath}
           >
             Falar no WhatsApp
-          </a>
+          </WhatsappTrackingLink>
         </div>
       </header>
 
@@ -213,14 +223,18 @@ export default function VooSingularLandingPage() {
               grupos e pacotes sob medida.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a
+              <WhatsappTrackingLink
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-full bg-blue-700 px-7 py-4 text-base font-extrabold text-white shadow-xl shadow-blue-900/20 transition hover:-translate-y-0.5 hover:bg-blue-800"
+                ctaId="hero-whatsapp"
+                ctaLabel="Quero planejar minha viagem"
+                pageId={analyticsPage.pageId}
+                pagePath={analyticsPage.pagePath}
               >
                 Quero planejar minha viagem
-              </a>
+              </WhatsappTrackingLink>
               <a
                 href="#destinos"
                 className="inline-flex items-center justify-center rounded-full border border-blue-200 bg-white px-7 py-4 text-base font-extrabold text-blue-800 transition hover:-translate-y-0.5 hover:border-blue-300 hover:bg-sky-50"
@@ -306,14 +320,18 @@ export default function VooSingularLandingPage() {
                 )
               )}
             </div>
-            <a
+            <WhatsappTrackingLink
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-blue-700 px-6 py-4 text-base font-extrabold text-white transition hover:bg-blue-800"
+              ctaId="planner-whatsapp"
+              ctaLabel="Montar minha viagem pelo WhatsApp"
+              pageId={analyticsPage.pageId}
+              pagePath={analyticsPage.pagePath}
             >
               Montar minha viagem pelo WhatsApp
-            </a>
+            </WhatsappTrackingLink>
           </div>
         </div>
       </section>
@@ -416,14 +434,18 @@ export default function VooSingularLandingPage() {
                 <p className="mt-3 flex-1 leading-7 text-slate-600">
                   {destination.description}
                 </p>
-                <a
+                <WhatsappTrackingLink
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-5 inline-flex items-center justify-center rounded-full border border-blue-200 px-5 py-3 text-sm font-extrabold text-blue-800 transition hover:bg-blue-700 hover:text-white"
+                  ctaId="card-interest"
+                  ctaLabel={`Tenho interesse - ${destination.title}`}
+                  pageId={analyticsPage.pageId}
+                  pagePath={analyticsPage.pagePath}
                 >
                   Tenho interesse
-                </a>
+                </WhatsappTrackingLink>
               </article>
             ))}
           </div>
@@ -554,14 +576,18 @@ export default function VooSingularLandingPage() {
             Fale com a Voo Singular pelo WhatsApp e receba atendimento
             personalizado para dar o próximo passo.
           </p>
-          <a
+          <WhatsappTrackingLink
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-8 inline-flex rounded-full bg-white px-8 py-4 text-base font-extrabold text-blue-900 shadow-xl shadow-blue-950/30 transition hover:-translate-y-0.5 hover:bg-sky-50"
+            ctaId="final-whatsapp"
+            ctaLabel="Falar com a Voo Singular no WhatsApp"
+            pageId={analyticsPage.pageId}
+            pagePath={analyticsPage.pagePath}
           >
             Falar com a Voo Singular no WhatsApp
-          </a>
+          </WhatsappTrackingLink>
         </div>
       </section>
 
@@ -601,14 +627,18 @@ export default function VooSingularLandingPage() {
             >
               Instagram
             </a>
-            <a
+            <WhatsappTrackingLink
               href={institutionalWhatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg border border-slate-200 px-4 py-3 transition hover:border-blue-200 hover:text-blue-800"
+              ctaId="footer-institutional-whatsapp"
+              ctaLabel="WhatsApp institucional"
+              pageId={analyticsPage.pageId}
+              pagePath={analyticsPage.pagePath}
             >
               WhatsApp institucional
-            </a>
+            </WhatsappTrackingLink>
             <span className="rounded-lg border border-slate-200 px-4 py-3">
               {brand.seal}
             </span>
