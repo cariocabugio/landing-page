@@ -1,0 +1,149 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function optionalString(data, field, maxLength) {
+      return !(field in data.keys())
+        || (data[field] is string && data[field].size() <= maxLength);
+    }
+
+    function optionalNullableString(data, field, maxLength) {
+      return !(field in data.keys())
+        || data[field] == null
+        || (data[field] is string && data[field].size() <= maxLength);
+    }
+
+    function validUserDocument(data) {
+      return data.keys().hasOnly([
+        'uid',
+        'email',
+        'displayName',
+        'pageSlug',
+        'createdAt',
+        'plan',
+        'role'
+      ])
+      && data.uid is string
+      && data.uid == request.auth.uid
+      && optionalNullableString(data, 'email', 320)
+      && optionalNullableString(data, 'displayName', 120)
+      && optionalString(data, 'pageSlug', 160)
+      && optionalString(data, 'plan', 32)
+      && optionalString(data, 'role', 32);
+    }
+
+    function validUserCreate(data) {
+      return validUserDocument(data)
+        && (!(data.keys().hasAny(['plan'])) || data.plan == 'free')
+        && !(data.keys().hasAny(['role']));
+    }
+
+    function validUserSelfUpdate() {
+      return validUserDocument(request.resource.data)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'email',
+          'displayName',
+          'pageSlug'
+        ]);
+    }
+
+    function validPageDocument(data) {
+      return data.keys().hasOnly([
+        'userId',
+        'slug',
+        'title',
+        'bio',
+        'profileImageUrl',
+        'backgroundImage',
+        'theme',
+        'links'
+      ])
+      && data.userId is string
+      && data.slug is string
+      && optionalString(data, 'title', 160)
+      && optionalString(data, 'bio', 1000)
+      && optionalNullableString(data, 'profileImageUrl', 2048)
+      && optionalNullableString(data, 'backgroundImage', 2048)
+      && optionalString(data, 'theme', 64)
+      && (!(data.keys().hasAny(['links'])) || data.links is list);
+    }
+
+    function validAnalyticsEvent(data) {
+      return data.keys().hasOnly([
+        'type',
+        'pageId',
+        'pagePath',
+        'campaignId',
+        'source',
+        'medium',
+        'campaign',
+        'referrer',
+        'userAgent',
+        'ctaId',
+        'ctaLabel',
+        'createdAt'
+      ])
+      && data.keys().hasAll(['type', 'pageId', 'pagePath', 'createdAt'])
+      && data.type in ['page_view', 'whatsapp_click']
+      && data.pageId is string
+      && data.pageId.size() > 0
+      && data.pageId.size() <= 160
+      && data.pagePath is string
+      && data.pagePath.size() > 0
+      && data.pagePath.size() <= 512
+      && data.createdAt == request.time
+      && optionalString(data, 'campaignId', 160)
+      && optionalString(data, 'source', 120)
+      && optionalString(data, 'medium', 120)
+      && optionalString(data, 'campaign', 160)
+      && optionalString(data, 'referrer', 2048)
+      && optionalString(data, 'userAgent', 512)
+      && optionalString(data, 'ctaId', 160)
+      && optionalString(data, 'ctaLabel', 160);
+    }
+
+    match /users/{userId} {
+      allow get: if isSelf(userId);
+      allow list: if false;
+      allow create: if isSelf(userId) && validUserCreate(request.resource.data);
+      allow update: if isSelf(userId) && validUserSelfUpdate();
+      allow delete: if false;
+    }
+
+    match /pages/{pageId} {
+      allow get: if true;
+      allow list: if isSignedIn();
+      allow create: if isSignedIn()
+        && validPageDocument(request.resource.data)
+        && request.resource.data.userId == request.auth.uid;
+      allow update: if isSignedIn()
+        && validPageDocument(request.resource.data)
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId;
+      allow delete: if false;
+    }
+
+    match /analyticsEvents/{eventId} {
+      // Analytics is not CRM. Do not store sensitive personal data,
+      // visitor phones, WhatsApp conversations, quotes, sales, or history.
+      allow create: if validAnalyticsEvent(request.resource.data);
+
+      // Public event reads are blocked; dashboard reads require auth for now.
+      allow read: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
