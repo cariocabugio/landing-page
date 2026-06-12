@@ -3,7 +3,7 @@ import Link from 'next/link';
 import WhatsappTrackingLink from '@/components/WhatsappTrackingLink';
 
 const whatsappUrl =
-  'https://wa.me/5579996337995?text=Ol%C3%A1%2C%20Rodrigo%21%20Vi%20a%20landing%20page%20da%20Voo%20Singular%20e%20quero%20planejar%20minha%20pr%C3%B3xima%20viagem.';
+  'https://wa.me/message/WVU5HETZM6QHN1';
 
 const institutionalWhatsappUrl =
   'https://wa.me/5579988255599?text=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es.';
