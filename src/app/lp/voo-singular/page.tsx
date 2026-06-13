@@ -90,6 +90,49 @@ const destinations = [
   },
 ];
 
+const featuredOffers = [
+  {
+    title: 'Cruzeiros Temáticos',
+    description:
+      'Experiências únicas em alto-mar com música, entretenimento e momentos inesquecíveis.',
+    ctaId: 'offer-cruzeiros',
+    imageLabel: 'Cruzeiros em alto-mar',
+    imageClass:
+      'bg-[linear-gradient(135deg,#082f49_0%,#0e7490_48%,#facc15_100%)]',
+    highlight: 'Alto-mar',
+  },
+  {
+    title: 'Jalapão',
+    description:
+      'Natureza, aventura e paisagens impressionantes no coração do Brasil.',
+    ctaId: 'offer-jalapao',
+    imageLabel: 'Paisagens naturais do Jalapão',
+    imageClass:
+      'bg-[linear-gradient(135deg,#14532d_0%,#84cc16_52%,#f97316_100%)]',
+    highlight: 'Natureza',
+  },
+  {
+    title: 'Essências da Europa',
+    description:
+      'Conheça alguns dos destinos mais desejados do continente europeu.',
+    ctaId: 'offer-europa',
+    imageLabel: 'Roteiros pela Europa',
+    imageClass:
+      'bg-[linear-gradient(135deg,#1e1b4b_0%,#2563eb_50%,#f8fafc_100%)]',
+    highlight: 'Internacional',
+  },
+  {
+    title: 'Resorts e Hotéis',
+    description:
+      'Descanso, conforto e experiências incríveis nos melhores destinos do Nordeste.',
+    ctaId: 'offer-resorts',
+    imageLabel: 'Resorts e hotéis no Nordeste',
+    imageClass:
+      'bg-[linear-gradient(135deg,#0f766e_0%,#38bdf8_50%,#fef3c7_100%)]',
+    highlight: 'Conforto',
+  },
+];
+
 const trustIndicators = [
   {
     value: '+ de 2 anos',
@@ -493,6 +536,106 @@ export default function VooSingularLandingPage() {
                 </WhatsappTrackingLink>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-5 py-14 text-slate-950 sm:py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-3xl">
+            <p className="text-sm font-black uppercase text-blue-700">
+              Vitrine selecionada
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+              Experiências e Ofertas em Destaque
+            </h2>
+            <p className="mt-4 leading-8 text-slate-600">
+              Algumas das experiências que nossos clientes mais procuram para
+              viver momentos inesquecíveis.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {featuredOffers.map((offer) => (
+              <article
+                key={offer.ctaId}
+                className="group overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm shadow-blue-950/5 transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-950/10"
+              >
+                <div
+                  aria-label={offer.imageLabel}
+                  className={`relative min-h-64 overflow-hidden ${offer.imageClass}`}
+                  role="img"
+                >
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.48),transparent_34%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.72)_100%)] transition duration-500 group-hover:scale-105" />
+                  <div className="absolute inset-x-5 bottom-5">
+                    <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-black uppercase text-blue-950 shadow-lg shadow-blue-950/15">
+                      {offer.highlight}
+                    </span>
+                    <h3 className="mt-3 text-2xl font-black leading-tight text-white drop-shadow">
+                      {offer.title}
+                    </h3>
+                  </div>
+                </div>
+                <div className="p-5">
+                  <p className="min-h-16 leading-7 text-slate-600">
+                    {offer.description}
+                  </p>
+                  <WhatsappTrackingLink
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-blue-800 px-5 py-3 text-center text-sm font-extrabold text-white shadow-lg shadow-blue-900/15 transition hover:-translate-y-0.5 hover:bg-blue-900"
+                    ctaId={offer.ctaId}
+                    ctaLabel="Quero informações"
+                    pageId={analyticsPage.pageId}
+                    pagePath={analyticsPage.pagePath}
+                  >
+                    Quero informações
+                  </WhatsappTrackingLink>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-slate-50 px-5 py-14 text-slate-950 sm:py-16">
+        <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-black uppercase text-blue-700">
+              Vídeo inspiracional
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+              Inspire-se para sua próxima viagem
+            </h2>
+            <p className="mt-4 leading-8 text-slate-600">
+              Veja um pouco das experiências que podem estar esperando por você
+              na sua próxima aventura.
+            </p>
+          </div>
+          <div className="mx-auto mt-8 max-w-4xl overflow-hidden rounded-3xl border border-white bg-slate-950 shadow-xl shadow-blue-950/15">
+            <div className="aspect-video w-full">
+              <iframe
+                src="https://www.youtube.com/embed/tMCgEtyEXOo"
+                title="Vídeo inspiracional de viagem Voo Singular"
+                className="h-full w-full"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          </div>
+          <div className="mx-auto mt-7 max-w-md">
+            <WhatsappTrackingLink
+              href={whatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-blue-800 px-7 py-4 text-center text-base font-extrabold text-white shadow-xl shadow-blue-900/20 transition hover:-translate-y-0.5 hover:bg-blue-900"
+              ctaId="video-cruzeiro"
+              ctaLabel="Quero informações sobre esta experiência"
+              pageId={analyticsPage.pageId}
+              pagePath={analyticsPage.pagePath}
+            >
+              Quero informações sobre esta experiência
+            </WhatsappTrackingLink>
           </div>
         </div>
       </section>
