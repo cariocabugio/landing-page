@@ -376,117 +376,6 @@ export default function VooSingularLandingPage() {
       </section>
 
       <section
-        id="como-funciona"
-        className="bg-white px-5 py-14 text-slate-950 sm:py-16"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="max-w-3xl">
-            <p className="text-sm font-black uppercase text-blue-700">
-              Como funciona
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              Um atendimento simples, humano e direto pelo WhatsApp.
-            </h2>
-            <p className="mt-4 leading-8 text-slate-600">
-              Você não precisa chegar com tudo decidido. A conversa começa pela
-              sua ideia de viagem e evolui com orientação profissional.
-            </p>
-          </div>
-          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step, index) => (
-              <article
-                key={step.title}
-                className="rounded-lg border border-slate-200 bg-slate-50 p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:bg-white hover:shadow-xl hover:shadow-blue-950/10"
-              >
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-800 text-sm font-black text-white shadow-lg shadow-blue-900/20">
-                  {index + 1}
-                </span>
-                <h3 className="mt-5 text-lg font-black text-slate-950">
-                  {step.title}
-                </h3>
-                <p className="mt-3 leading-7 text-slate-600">{step.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-sky-50 px-5 py-14 text-slate-950 sm:py-16">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
-            <div>
-              <p className="text-sm font-black uppercase text-blue-700">
-                Benefícios
-              </p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-                Mais clareza para escolher e mais segurança para viajar.
-              </h2>
-            </div>
-            <p className="leading-8 text-slate-600">
-              A Voo Singular ajuda você a sair da pesquisa infinita e conversar
-              com alguém que entende o que precisa ser comparado antes da
-              decisão.
-            </p>
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {benefits.map((benefit) => (
-              <article
-                key={benefit.title}
-                className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/10"
-              >
-                <span className="block h-1.5 w-12 rounded-full bg-cyan-400" />
-                <h3 className="mt-4 text-lg font-black text-blue-950">
-                  {benefit.title}
-                </h3>
-                <p className="mt-3 leading-7 text-slate-600">
-                  {benefit.text}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-white px-5 py-14 text-slate-950 sm:py-16">
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-          <div>
-            <p className="text-sm font-black uppercase text-blue-700">
-              Por que falar com um agente
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-              Viajar não é apenas comprar passagem ou hospedagem.
-            </h2>
-            <p className="mt-4 leading-8 text-slate-600">
-              Um agente ajuda você a escolher melhor, evitar decisões ruins e
-              montar uma experiência mais segura. Com Rodrigo Borges, a conversa
-              acontece de forma próxima e objetiva.
-            </p>
-          </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 shadow-sm sm:p-5">
-            <div className="rounded-lg bg-[linear-gradient(135deg,#0b2d5f_0%,#1468a8_58%,#38c6d6_100%)] p-5 text-white sm:p-6">
-              <p className="text-sm font-black uppercase text-cyan-100">
-                Decisão assistida
-              </p>
-              <h3 className="mt-3 text-2xl font-black">
-                Menos tentativa e erro. Mais orientação antes de fechar.
-              </h3>
-            </div>
-            <div className="mt-4 grid gap-3">
-              {agentReasons.map((reason) => (
-                <div
-                  key={reason}
-                  className="flex gap-3 rounded-lg border border-slate-200 bg-white p-4 text-sm font-bold leading-6 text-slate-700"
-                >
-                  <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500" />
-                  {reason}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section
         id="destinos"
         className="bg-slate-50 px-5 py-14 text-slate-950 sm:py-16"
       >
@@ -636,6 +525,117 @@ export default function VooSingularLandingPage() {
             >
               Quero informações sobre esta experiência
             </WhatsappTrackingLink>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="como-funciona"
+        className="bg-white px-5 py-14 text-slate-950 sm:py-16"
+      >
+        <div className="mx-auto max-w-6xl">
+          <div className="max-w-3xl">
+            <p className="text-sm font-black uppercase text-blue-700">
+              Como funciona
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+              Um atendimento simples, humano e direto pelo WhatsApp.
+            </h2>
+            <p className="mt-4 leading-8 text-slate-600">
+              Você não precisa chegar com tudo decidido. A conversa começa pela
+              sua ideia de viagem e evolui com orientação profissional.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {steps.map((step, index) => (
+              <article
+                key={step.title}
+                className="rounded-lg border border-slate-200 bg-slate-50 p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:bg-white hover:shadow-xl hover:shadow-blue-950/10"
+              >
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-800 text-sm font-black text-white shadow-lg shadow-blue-900/20">
+                  {index + 1}
+                </span>
+                <h3 className="mt-5 text-lg font-black text-slate-950">
+                  {step.title}
+                </h3>
+                <p className="mt-3 leading-7 text-slate-600">{step.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-sky-50 px-5 py-14 text-slate-950 sm:py-16">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+            <div>
+              <p className="text-sm font-black uppercase text-blue-700">
+                Benefícios
+              </p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+                Mais clareza para escolher e mais segurança para viajar.
+              </h2>
+            </div>
+            <p className="leading-8 text-slate-600">
+              A Voo Singular ajuda você a sair da pesquisa infinita e conversar
+              com alguém que entende o que precisa ser comparado antes da
+              decisão.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {benefits.map((benefit) => (
+              <article
+                key={benefit.title}
+                className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/10"
+              >
+                <span className="block h-1.5 w-12 rounded-full bg-cyan-400" />
+                <h3 className="mt-4 text-lg font-black text-blue-950">
+                  {benefit.title}
+                </h3>
+                <p className="mt-3 leading-7 text-slate-600">
+                  {benefit.text}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-5 py-14 text-slate-950 sm:py-16">
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div>
+            <p className="text-sm font-black uppercase text-blue-700">
+              Por que falar com um agente
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
+              Viajar não é apenas comprar passagem ou hospedagem.
+            </h2>
+            <p className="mt-4 leading-8 text-slate-600">
+              Um agente ajuda você a escolher melhor, evitar decisões ruins e
+              montar uma experiência mais segura. Com Rodrigo Borges, a conversa
+              acontece de forma próxima e objetiva.
+            </p>
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4 shadow-sm sm:p-5">
+            <div className="rounded-lg bg-[linear-gradient(135deg,#0b2d5f_0%,#1468a8_58%,#38c6d6_100%)] p-5 text-white sm:p-6">
+              <p className="text-sm font-black uppercase text-cyan-100">
+                Decisão assistida
+              </p>
+              <h3 className="mt-3 text-2xl font-black">
+                Menos tentativa e erro. Mais orientação antes de fechar.
+              </h3>
+            </div>
+            <div className="mt-4 grid gap-3">
+              {agentReasons.map((reason) => (
+                <div
+                  key={reason}
+                  className="flex gap-3 rounded-lg border border-slate-200 bg-white p-4 text-sm font-bold leading-6 text-slate-700"
+                >
+                  <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-emerald-500" />
+                  {reason}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
