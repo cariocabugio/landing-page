@@ -350,12 +350,12 @@ export default function VooSingularLandingPage() {
 
       <section
         id="destinos"
-        className="bg-slate-50 px-5 py-14 text-slate-950 sm:py-16"
+        className="bg-white px-5 py-14 text-slate-950 sm:py-16"
       >
         <div className="mx-auto max-w-6xl">
           <div className="max-w-3xl">
             <p className="text-sm font-black uppercase text-blue-700">
-              Destinos e experiências em destaque
+              Destinos e Experiências em Destaque
             </p>
             <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
               Escolha o tipo de experiência. Rodrigo ajuda a encontrar o melhor
@@ -399,21 +399,9 @@ export default function VooSingularLandingPage() {
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="bg-white px-5 py-14 text-slate-950 sm:py-16">
-        <div className="mx-auto max-w-6xl">
-          <div className="max-w-3xl">
+          <div className="mt-10 border-t border-slate-200 pt-8 sm:mt-12">
             <p className="text-sm font-black uppercase text-blue-700">
-              Vitrine selecionada
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
               Experiências e Ofertas em Destaque
-            </h2>
-            <p className="mt-4 leading-8 text-slate-600">
-              Algumas das experiências que nossos clientes mais procuram para
-              viver momentos inesquecíveis.
             </p>
           </div>
           <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
