@@ -24,33 +24,6 @@ const brand = {
   seal: 'Cadastur',
 };
 
-const benefits = [
-  {
-    title: 'Atendimento humano e personalizado',
-    text: 'Rodrigo entende seu momento, seu orçamento e o tipo de viagem que combina com você.',
-  },
-  {
-    title: 'Economia de tempo na escolha',
-    text: 'Você evita pesquisar dezenas de opções sozinho e recebe caminhos mais adequados ao seu perfil.',
-  },
-  {
-    title: 'Ajuda para comparar opções',
-    text: 'A Voo Singular orienta diferenças entre destinos, pacotes, hospedagens e experiências.',
-  },
-  {
-    title: 'Planejamento com mais segurança',
-    text: 'Você decide com mais clareza antes de reservar passagens, hospedagens e passeios.',
-  },
-  {
-    title: 'Experiências alinhadas ao viajante',
-    text: 'Viagens para casais, famílias, grupos, lua de mel, eventos e momentos especiais.',
-  },
-  {
-    title: 'Suporte antes do embarque',
-    text: 'O atendimento ajuda você a chegar mais preparado para a viagem, do plano ao próximo passo.',
-  },
-];
-
 const destinations = [
   {
     category: 'Viagens nacionais',
@@ -559,42 +532,6 @@ export default function VooSingularLandingPage() {
                   {step.title}
                 </h3>
                 <p className="mt-3 leading-7 text-slate-600">{step.text}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-sky-50 px-5 py-14 text-slate-950 sm:py-16">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
-            <div>
-              <p className="text-sm font-black uppercase text-blue-700">
-                Benefícios
-              </p>
-              <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">
-                Mais clareza para escolher e mais segurança para viajar.
-              </h2>
-            </div>
-            <p className="leading-8 text-slate-600">
-              A Voo Singular ajuda você a sair da pesquisa infinita e conversar
-              com alguém que entende o que precisa ser comparado antes da
-              decisão.
-            </p>
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {benefits.map((benefit) => (
-              <article
-                key={benefit.title}
-                className="rounded-lg border border-blue-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-950/10"
-              >
-                <span className="block h-1.5 w-12 rounded-full bg-cyan-400" />
-                <h3 className="mt-4 text-lg font-black text-blue-950">
-                  {benefit.title}
-                </h3>
-                <p className="mt-3 leading-7 text-slate-600">
-                  {benefit.text}
-                </p>
               </article>
             ))}
           </div>
