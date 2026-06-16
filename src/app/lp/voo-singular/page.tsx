@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import WhatsappTrackingLink from '@/components/WhatsappTrackingLink';
 
@@ -30,36 +31,55 @@ const destinations = [
     title: 'Brasil com curadoria',
     description:
       'Praias, natureza, cultura e roteiros especiais para descobrir o país com mais tranquilidade.',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781561345/viagens-nacionais.jpg',
+    imageAlt: 'Vista de Angra dos Reis representando viagens nacionais',
   },
   {
     category: 'Viagens internacionais',
     title: 'Exterior com orientação',
     description:
       'Planejamento para quem quer viajar para fora com escolhas mais claras desde o início.',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781564874/Viagens_internacionais_lqg6e5.jpg',
+    imageAlt: 'Destino internacional representando viagens ao exterior',
   },
   {
     category: 'Lua de mel',
     title: 'Momentos a dois',
     description:
       'Destinos e hospedagens pensados para uma experiência romântica, confortável e memorável.',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781565130/lua-de-mel_p1tsth.jpg',
+    imageAlt: 'Casal em viagem romântica representando lua de mel',
   },
   {
     category: 'Viagens em família',
     title: 'Planos para todos',
     description:
       'Opções que equilibram descanso, diversão, logística e segurança para diferentes idades.',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781565502/viagens-em-familia_yvibru.jpg',
+    imageAlt: 'Família viajando junta durante as férias',
   },
   {
     category: 'Cruzeiros',
     title: 'Experiências no mar',
     description:
       'Orientação para escolher roteiro, cabine, datas e estilo de cruzeiro com mais confiança.',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781565804/Cruzeiros_tdx2vc.jpg',
+    imageAlt: 'Navio de cruzeiro durante uma viagem marítima',
   },
   {
     category: 'Experiências personalizadas',
     title: 'Viagens sob medida',
     description:
       'Eventos, grupos, celebrações e roteiros especiais montados a partir do seu perfil.',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781566346/experiencias-personalizadas_jxtwth.jpg',
+    imageAlt:
+      'Experiência de viagem personalizada planejada de acordo com o perfil do viajante',
   },
 ];
 
@@ -70,8 +90,9 @@ const featuredOffers = [
       'Experiências únicas em alto-mar com música, entretenimento e momentos inesquecíveis.',
     ctaId: 'offer-cruzeiros',
     imageLabel: 'Cruzeiros em alto-mar',
-    imageClass:
-      'bg-[linear-gradient(135deg,#082f49_0%,#0e7490_48%,#facc15_100%)]',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781567630/cruzeiros_omilq1.jpg',
+    imageAlt: 'Navio de cruzeiro representando experiências marítimas temáticas',
     highlight: 'Alto-mar',
   },
   {
@@ -80,8 +101,10 @@ const featuredOffers = [
       'Natureza, aventura e paisagens impressionantes no coração do Brasil.',
     ctaId: 'offer-jalapao',
     imageLabel: 'Paisagens naturais do Jalapão',
-    imageClass:
-      'bg-[linear-gradient(135deg,#14532d_0%,#84cc16_52%,#f97316_100%)]',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781567767/oferta-jalapao_nxxnqk.jpg',
+    imageAlt:
+      'Paisagem natural do Jalapão com águas cristalinas e vegetação do cerrado',
     highlight: 'Natureza',
   },
   {
@@ -90,8 +113,9 @@ const featuredOffers = [
       'Conheça alguns dos destinos mais desejados do continente europeu.',
     ctaId: 'offer-europa',
     imageLabel: 'Roteiros pela Europa',
-    imageClass:
-      'bg-[linear-gradient(135deg,#1e1b4b_0%,#2563eb_50%,#f8fafc_100%)]',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781567931/oferta-europa_cz1uut.jpg',
+    imageAlt: 'Destino europeu representando roteiros culturais pela Europa',
     highlight: 'Internacional',
   },
   {
@@ -100,8 +124,9 @@ const featuredOffers = [
       'Descanso, conforto e experiências incríveis nos melhores destinos do Nordeste.',
     ctaId: 'offer-resorts',
     imageLabel: 'Resorts e hotéis no Nordeste',
-    imageClass:
-      'bg-[linear-gradient(135deg,#0f766e_0%,#38bdf8_50%,#fef3c7_100%)]',
+    imageUrl:
+      'https://res.cloudinary.com/deklwmysq/image/upload/v1781568042/oferta-resorts_vsceol.jpg',
+    imageAlt: 'Resort com área de lazer representando hospedagens selecionadas',
     highlight: 'Conforto',
   },
 ];
@@ -370,32 +395,54 @@ export default function VooSingularLandingPage() {
             {destinations.map((destination) => (
               <article
                 key={destination.title}
-                className="flex min-h-64 flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-950/10"
+                className={
+                  destination.imageUrl
+                    ? 'flex min-h-64 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-950/10'
+                    : 'flex min-h-64 flex-col rounded-lg border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-950/10'
+                }
               >
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs font-black uppercase text-cyan-700">
-                    {destination.category}
-                  </p>
-                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
-                </div>
-                <h3 className="mt-3 text-xl font-black text-slate-950">
-                  {destination.title}
-                </h3>
-                <p className="mt-3 flex-1 leading-7 text-slate-600">
-                  {destination.description}
-                </p>
-                <WhatsappTrackingLink
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-5 inline-flex items-center justify-center rounded-full border border-blue-200 px-5 py-3 text-sm font-extrabold text-blue-800 transition hover:bg-blue-700 hover:text-white"
-                  ctaId="card-interest"
-                  ctaLabel={`Tenho interesse - ${destination.title}`}
-                  pageId={analyticsPage.pageId}
-                  pagePath={analyticsPage.pagePath}
+                {destination.imageUrl ? (
+                  <div className="relative h-40 overflow-hidden">
+                    <Image
+                      src={destination.imageUrl}
+                      alt={destination.imageAlt}
+                      fill
+                      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-slate-950/5 to-transparent" />
+                  </div>
+                ) : null}
+                <div
+                  className={
+                    destination.imageUrl ? 'flex flex-1 flex-col p-5' : 'flex flex-1 flex-col'
+                  }
                 >
-                  Tenho interesse
-                </WhatsappTrackingLink>
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="text-xs font-black uppercase text-cyan-700">
+                      {destination.category}
+                    </p>
+                    <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+                  </div>
+                  <h3 className="mt-3 text-xl font-black text-slate-950">
+                    {destination.title}
+                  </h3>
+                  <p className="mt-3 flex-1 leading-7 text-slate-600">
+                    {destination.description}
+                  </p>
+                  <WhatsappTrackingLink
+                    href={whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 inline-flex items-center justify-center rounded-full border border-blue-200 px-5 py-3 text-sm font-extrabold text-blue-800 transition hover:bg-blue-700 hover:text-white"
+                    ctaId="card-interest"
+                    ctaLabel={`Tenho interesse - ${destination.title}`}
+                    pageId={analyticsPage.pageId}
+                    pagePath={analyticsPage.pagePath}
+                  >
+                    Tenho interesse
+                  </WhatsappTrackingLink>
+                </div>
               </article>
             ))}
           </div>
@@ -412,10 +459,17 @@ export default function VooSingularLandingPage() {
               >
                 <div
                   aria-label={offer.imageLabel}
-                  className={`relative min-h-64 overflow-hidden ${offer.imageClass}`}
+                  className="relative min-h-64 overflow-hidden"
                   role="img"
                 >
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.48),transparent_34%),linear-gradient(180deg,transparent_0%,rgba(15,23,42,0.72)_100%)] transition duration-500 group-hover:scale-105" />
+                  <Image
+                    src={offer.imageUrl}
+                    alt={offer.imageAlt}
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.36),transparent_34%),linear-gradient(180deg,rgba(15,23,42,0.08)_0%,rgba(15,23,42,0.78)_100%)]" />
                   <div className="absolute inset-x-5 bottom-5">
                     <span className="rounded-full bg-white/90 px-3 py-1.5 text-xs font-black uppercase text-blue-950 shadow-lg shadow-blue-950/15">
                       {offer.highlight}
